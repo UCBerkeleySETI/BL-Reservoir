@@ -1,9 +1,13 @@
 import zmq
 import time
 
+print("Running")
+
 context = zmq.Context()
 socket = context.socket(zmq.REP)
 socket.bind("tcp://*:5555")
+
+print("Socket connected")
 
 while True:
     #  Wait for next request from client
