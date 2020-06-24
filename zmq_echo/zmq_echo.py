@@ -7,7 +7,7 @@ socket.bind("tcp://*:5555")
 
 while True:
     #  Wait for next request from client
-    message = socket.recv()
+    message = socket.recv_string()
     print("Received request: %s" % message)
 
     #  Do some 'work'
