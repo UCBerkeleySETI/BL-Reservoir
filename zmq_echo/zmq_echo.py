@@ -1,4 +1,5 @@
 import zmq
+import time
 
 context = zmq.Context()
 socket = context.socket(zmq.REP)
@@ -13,4 +14,4 @@ while True:
     time.sleep(1)
 
     #  Send reply back to client
-    socket.send("Echo: " + message)
+    socket.send_string("Echo: " + message)
