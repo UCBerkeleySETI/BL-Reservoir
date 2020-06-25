@@ -18,7 +18,7 @@ while True:
     start = time.time()
     filename = wget.download(data_url)
     obs_name = os.path.splitext(filename)[0]
-    os.system(f"python3 /code/alien-hunting-algs/energy_detection/preprocess_fine.py {os.path.join(os.getcwd(), filename)}")
+    os.system(f"python3 /code/alien_hunting_algs/energy_detection/preprocess_fine.py {os.path.join(os.getcwd(), filename)}")
     upload.upload_dir("bl-scale", os.path.join(obs_name))
     os.remove(filename)
     os.system(f"rm -rf {obs_name}")
