@@ -2,7 +2,7 @@ import zmq
 import time
 import os
 import wget
-import upload
+from .. import upload
 
 print("Running")
 
