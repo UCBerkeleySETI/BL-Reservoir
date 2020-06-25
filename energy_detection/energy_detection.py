@@ -18,7 +18,13 @@ while True:
     start = time.time()
     filename = wget.download(data_url)
     obs_name = os.path.splitext(filename)[0]
-    os.system(f"cd alien_hunting_algs/energy_detection && python3 preprocess_fine.py {os.path.join(os.getcwd(), filename)}")
+    print(f"Downloaded observation {obs_name}")
+    fail = os.system(f"cd alien_hunting_algs/energy_detection && python3 preprocess_fine.py {os.path.join(os.getcwd(), filename)}")
+    if fail:
+        socket.send_string("Algorithm Failed")
+        os.remove(filename)
+        os.system(f"rm -rf {obs_name}")
+        print(f"Algorithm Failed, removed {obs_name}")
     upload.upload_dir("bl-scale", os.path.join(obs_name))
     os.remove(filename)
     os.system(f"rm -rf {obs_name}")
