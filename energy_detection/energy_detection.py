@@ -25,6 +25,7 @@ while True:
         os.remove(filename)
         os.system(f"rm -rf {obs_name}")
         print(f"Algorithm Failed, removed {obs_name}")
+        continue
     upload.upload_dir("bl-scale", os.path.join(obs_name))
     os.remove(filename)
     os.system(f"rm -rf {obs_name}")
