@@ -14,6 +14,7 @@ print("Socket connected")
 
 while True:
     data_url = socket.recv_string()
+    print(f"Received request to process {data_url}")
     start = time.time()
     filename = wget.download(data_url)
     obs_name = os.path.splitext(filename)[0]
