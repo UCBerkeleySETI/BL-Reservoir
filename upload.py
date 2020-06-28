@@ -54,7 +54,7 @@ def upload_dir_energy_detection(bucket_name, dir_name):
 
 def upload_dir(bucket_name, dir_name):
     start = time.time()
-    source_paths, dest_paths = []
+    source_paths, dest_paths = [], []
     for root, dirs, files in tqdm(os.walk(dir_name)):
         for file in files:
             source_paths.append(os.path.join(root, file))
