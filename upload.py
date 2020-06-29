@@ -58,7 +58,7 @@ def upload_dir(bucket_name, dir_name):
     for root, dirs, files in tqdm(os.walk(dir_name)):
         for file in files:
             source_paths.append(os.path.join(root, file))
-            dest_paths.append(os.path.join(os.path.dirname(dir_name).split("/")[-1],
+            dest_paths.append(os.path.join(os.path.basename(dir_name),
              os.path.relpath(os.path.join(root, file), start=dir_name)))
 
     print(f"Found {len(source_paths)} files in {dir_name}, uploading")
