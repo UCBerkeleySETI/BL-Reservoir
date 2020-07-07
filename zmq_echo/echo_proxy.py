@@ -14,11 +14,8 @@ print("Socket connected")
 
 while True:
     #  Wait for next request from client
-    message = socket.recv_string()
-    print("Received request: %s" % message)
-
-    #  Do some 'work'
-    time.sleep(1)
+    message = socket.recv()
+    print("Received request: %s" % str(message))
 
     #  Send reply back to client
-    broadcast.send_string("Echo: " + message)
+    broadcast.send(message)
