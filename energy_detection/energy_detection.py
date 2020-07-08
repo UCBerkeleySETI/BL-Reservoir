@@ -7,8 +7,10 @@ from .. import upload
 print("Running")
 
 context = zmq.Context()
-socket = context.socket(zmq.REP)
+socket = context.socket(zmq.PULL)
 socket.bind("tcp://*:5555")
+broadcast = context.socket(zmq.PUB)
+broadcast.connect("tcp://10.0.3.141:5559")
 
 print("Socket connected")
 
@@ -30,5 +32,5 @@ while True:
     os.remove(filename)
     os.system(f"rm -rf {obs_name}")
     end = time.time()
-    socket.send_string(
+    broadcast.send_string(
     f"Energy Detection and Result Upload finished in {end-start} seconds. Results uploaded to bl-scale/{obs_name}")
