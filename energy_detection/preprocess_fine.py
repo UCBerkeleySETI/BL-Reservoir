@@ -121,6 +121,7 @@ if __name__ == "__main__":
         vals_frame["freqs"] = vals_frame["index"].map(lambda x: freqs[x])
         frame_list.append(vals_frame)
 
+
         print("Saving results")
         # def save_stamps(channel_ind):
         #     # print("%s processing channel %d of %s" % (current_process().name, channel_ind, block_file))
@@ -147,13 +148,38 @@ if __name__ == "__main__":
         del channels
         del cleaned_block_data
 
+    #returns dataframe of 3*n filtered images
+    def filter_images(df, n):
+
+        #filter 1000 to 1400 freqs
+        freq_1000_1400 = df[(df["freqs"] >= 1000) & (df["freqs"] <= 1400)]
+        freq_1000_1400 = freq_1000_1400.sort_values("statistic", ascending=False).head(n)
+
+        #filter 1400 to 1700 freqs
+        freq_1400_1700 = df[(df["freqs"] > 1400) & (df["freqs"] <= 1700)]
+        freq_1400_1700 = freq_1400_1700.sort_values("statistic", ascending=False).head(n)
+
+        #filter 1700 plus freqs
+        freq_1700 = df[df["freqs"] > 1700]
+        freq_1700 = freq_1700.sort_values("statistic", ascending=False).head(n)
+
+        extr_all = pd.concat([freq_1000_1400, freq_1400_1700, freq_1700])
+        return extr_all
+
     full_df = pd.concat(frame_list, ignore_index=True)
     full_df.set_index("index")
     full_df.to_pickle(out_dir + "/info_df.pkl")
 
+    filtered_df = filter_images(full_df.reset_index(), 4)
+    filtered_stack = np.array([])
+
     if stack_list:
         full_stack = np.concatenate(stack_list)
-        np.save(out_dir + "/filtered.npy", full_stack)
+        for i in np.arange(0, len(full_stack)):
+            if i in filtered_df.index.values:
+                filtered_stack.append(full_stack[i])
+
+        np.save(out_dir + "/filtered.npy", filtered_stack)
 
     g_end = time()
     print("Finished Energy Detection on %s in %.4f seconds" % (os.path.basename(input_file), g_end - g_start))
