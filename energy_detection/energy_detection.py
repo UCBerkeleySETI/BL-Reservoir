@@ -16,7 +16,8 @@ print("Socket connected")
 
 while True:
     message_dict = {"done": False}
-    data_url = socket.recv_string()
+    request_dict = socket.recv_pyobj()
+    data_url = request_dict["message"]
     print(f"Received request to process {data_url}")
     message_dict["message"] = f"Received request to process {data_url}"
     broadcast.send_pyobj(message_dict)
