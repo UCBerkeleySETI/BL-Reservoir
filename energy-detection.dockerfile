@@ -20,7 +20,6 @@ RUN mkdir /code
 WORKDIR /code
 
 RUN git clone https://github.com/FX196/SETI-Energy-Detection.git
-COPY . /code/BL-Scale
-RUN git clone https://github.com/FX196/alien_hunting_algs.git
+COPY . /code/alien_hunting_algs
 
 CMD python3 -m alien_hunting_algs.$ALG_SUB_PACKAGE.$ALG_NAME
