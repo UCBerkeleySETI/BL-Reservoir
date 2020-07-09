@@ -150,7 +150,6 @@ if __name__ == "__main__":
 
     #returns dataframe of 3*n filtered images
     def filter_images(df, n):
-
         #filter 1000 to 1400 freqs
         freq_1000_1400 = df[(df["freqs"] >= 1000) & (df["freqs"] <= 1400)]
         freq_1000_1400 = freq_1000_1400.sort_values("statistic", ascending=False).head(n)
@@ -179,7 +178,8 @@ if __name__ == "__main__":
             if i in filtered_df.index.values:
                 filtered_stack.append(full_stack[i])
 
-        np.save(out_dir + "/filtered.npy", filtered_stack)
+        np.save(out_dir + "/filtered.npy", full_stack)
+        np.save(out_dir + "/hits.npy", filtered_stack)
 
     g_end = time()
     print("Finished Energy Detection on %s in %.4f seconds" % (os.path.basename(input_file), g_end - g_start))
