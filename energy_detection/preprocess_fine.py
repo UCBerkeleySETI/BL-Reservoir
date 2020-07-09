@@ -179,7 +179,7 @@ if __name__ == "__main__":
                 filtered_stack.append(full_stack[i])
 
         np.save(out_dir + "/filtered.npy", full_stack)
-        np.save(out_dir + "/hits.npy", filtered_stack)
+        np.save(out_dir + "/best_hits.npy", filtered_stack)
 
     g_end = time()
     print("Finished Energy Detection on %s in %.4f seconds" % (os.path.basename(input_file), g_end - g_start))
