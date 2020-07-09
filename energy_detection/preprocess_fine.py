@@ -174,9 +174,10 @@ if __name__ == "__main__":
 
     if stack_list:
         full_stack = np.concatenate(stack_list)
-        for i in np.arange(0, len(full_stack)):
-            if i in filtered_df.index.values:
-                filtered_stack = np.append(filtered_stack, full_stack[i])
+        filtered_stack = full_stack[filtered_df.index.values]
+        # for i in np.arange(0, len(full_stack)):
+        #     if i in filtered_df.index.values:
+        #         filtered_stack = np.append(filtered_stack, full_stack[i])
 
         np.save(out_dir + "/filtered.npy", full_stack)
         np.save(out_dir + "/best_hits.npy", filtered_stack)
