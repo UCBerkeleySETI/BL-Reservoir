@@ -27,7 +27,7 @@ while True:
     temp_url = temp_url.replace("/","")
     temp_url = temp_url.replace("http","")
     temp_url = temp_url.replace("h5","")
-    message_dict["url"] = data_url
+    message_dict["url"] = temp_url
     print(f"Received request to process {data_url}")
     message_dict["message"] = f"Received request to process {data_url}"
     broadcast.send_pyobj(message_dict)
