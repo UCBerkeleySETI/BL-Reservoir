@@ -17,7 +17,7 @@ print("Socket connected")
 while True:
     message_dict = {"done": False}
     message_dict["algo_type"] = 'Energy-Detection'
-    message_dict["target"] = obs_name
+    
     request_dict = socket.recv_pyobj()
     data_url = request_dict["message"]
     print(f"Received request to process {data_url}")
@@ -27,6 +27,7 @@ while True:
     start = time.time()
     filename = wget.download(data_url)
     obs_name = os.path.splitext(filename)[0]
+    message_dict["target"] = obs_name
     print(f"Downloaded observation {obs_name}")
     message_dict["message"] = f"Downloaded observation {obs_name}"
     broadcast.send_pyobj(message_dict)
