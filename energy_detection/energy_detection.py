@@ -16,6 +16,8 @@ print("Socket connected")
 
 while True:
     message_dict = {"done": False}
+    message_dict["algo_type"] = 'Energy-Detection'
+    message_dict["target"] = obs_name
     request_dict = socket.recv_pyobj()
     data_url = request_dict["message"]
     print(f"Received request to process {data_url}")
@@ -43,8 +45,7 @@ while True:
     end = time.time()
 
     message_dict["done"] = True
-    message_dict["algo_type"] = 'Energy-Detection'
-    message_dict["target"] = obs_name
+    
     message_dict["message"] = f"Energy Detection and Result Upload finished in {end-start} seconds. Results uploaded to gs://bl-scale/{obs_name}"
     message_dict["processing_time"] = end-start
     message_dict["object_uri"] = f"gs://bl-scale/{obs_name}"
