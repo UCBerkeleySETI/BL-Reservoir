@@ -20,6 +20,13 @@ while True:
     
     request_dict = socket.recv_pyobj()
     data_url = request_dict["message"]
+    # http://blpd13.ssl.berkeley.edu/dl/GBT_58402_67632_HIP65057_fine.h5
+    temp_url = data_url
+    temp_url = temp_url.replace(".","")
+    temp_url = temp_url.replace(":","")
+    temp_url = temp_url.replace("/","")
+    temp_url = temp_url.replace("http","")
+    temp_url = temp_url.replace("h5","")
     message_dict["url"] = data_url
     print(f"Received request to process {data_url}")
     message_dict["message"] = f"Received request to process {data_url}"
