@@ -2,6 +2,7 @@ import zmq
 import time
 import os
 import wget
+import time 
 from .. import upload
 
 print("Running")
@@ -17,6 +18,7 @@ print("Socket connected")
 while True:
     message_dict = {"done": False}
     message_dict["algo_type"] = "Energy-Detection"
+    message_dict["start_timestamp"] = time.time()*1000
     
     request_dict = socket.recv_pyobj()
     data_url = request_dict["message"]
