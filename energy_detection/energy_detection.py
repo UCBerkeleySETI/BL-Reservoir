@@ -16,8 +16,18 @@ print("Socket connected")
 
 while True:
     message_dict = {"done": False}
+    message_dict["algo_type"] = "Energy-Detection"
+    
     request_dict = socket.recv_pyobj()
     data_url = request_dict["message"]
+    # http://blpd13.ssl.berkeley.edu/dl/GBT_58402_67632_HIP65057_fine.h5
+    temp_url = data_url
+    temp_url = temp_url.replace(".","")
+    temp_url = temp_url.replace(":","")
+    temp_url = temp_url.replace("/","")
+    temp_url = temp_url.replace("http","")
+    temp_url = temp_url.replace("h5","")
+    message_dict["url"] = temp_url
     print(f"Received request to process {data_url}")
     message_dict["message"] = f"Received request to process {data_url}"
     broadcast.send_pyobj(message_dict)
@@ -25,6 +35,7 @@ while True:
     start = time.time()
     filename = wget.download(data_url)
     obs_name = os.path.splitext(filename)[0]
+    
     print(f"Downloaded observation {obs_name}")
     message_dict["message"] = f"Downloaded observation {obs_name}"
     broadcast.send_pyobj(message_dict)
@@ -43,6 +54,7 @@ while True:
     end = time.time()
 
     message_dict["done"] = True
+    message_dict["target"] = obs_name
     message_dict["message"] = f"Energy Detection and Result Upload finished in {end-start} seconds. Results uploaded to gs://bl-scale/{obs_name}"
     message_dict["processing_time"] = end-start
     message_dict["object_uri"] = f"gs://bl-scale/{obs_name}"
