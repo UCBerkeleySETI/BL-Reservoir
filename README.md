@@ -84,9 +84,9 @@ RUN pip3 install zmq tqdm pandas wget google-cloud-storage hdf5plugin
 
 ## Deploying Your Work
 
-After you've done all the work above and packaged things together nicely, the code would be automatically uploaded to Dockerhub where the images can be ran on the GCP instances. 
+After you've done all the work above and packaged things together, the code would be automatically uploaded to the registry after you push to the repo where the images can be ran on the GCP instances. 
 
-However, inorder to get your changes to show, you'd need to be able restart the kubernetes cluster by using `Google SDK` login with proper credentials and proper project, you would be able to run `kubectl get pods` and then `kubectl rollout restart ds bl-scale` it would restart the kubernetes cluster to contain the new image you just pushed on github which is held in the registry 
+However, in order to get your changes to show, you'd need to be able restart the kubernetes cluster by using `Google SDK` login with proper credentials and proper project, you would be able to run `kubectl get pods` and then `kubectl rollout restart ds bl-scale` it would restart the kubernetes cluster to contain the new image you just pushed on github which is held in the registry 
 
 # Questions
 
