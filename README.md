@@ -76,5 +76,14 @@ COPY . /code/bl_reservoir
 CMD python3 -m bl_reservoir.$ALG_SUB_PACKAGE.$ALG_NAME
 ```
 
-The only thing that will change between your algorithm is the requirements you need to run your script. Everything else would be setup for you to run your code. 
+The only thing that will change between your algorithm is the requirements you need to run your script. Everything else would be setup for you to run your code. Which means
+you just need to change this line below to whatever requirements you need for your algorithm. 
+```
+RUN pip3 install zmq tqdm pandas wget google-cloud-storage hdf5plugin
+```
 
+## Deploying Your Work
+
+After you've done all the work above and packaged things together nicely, the code would be automatically uploaded to Dockerhub where the images can be ran on the GCP instances. 
+
+However, inorder to get your changes to show, you'd need to be able restart the kubernetes cluster by using `Google SDK` login with proper credentials and proper project, you would be able to run `kubectl get pods` and then `kubectl rollout restart ds bl-scale` it would restart the kubernetes cluster to contain the new image you just pushed on github which is held in the registry 
