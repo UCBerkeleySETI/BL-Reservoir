@@ -9,7 +9,7 @@ from keras import backend as K
 from random import random
 
 from  copy import deepcopy
-import cupy as cp
+
 
 class predict(object):
 
@@ -48,19 +48,7 @@ class predict(object):
             self.values[j]=(np.square(np.subtract(anchor[index:index+1,:], check[j:j+1,:]))).mean()   
         return self.values
 
-    def compute_distance_cupy(self):
-        """
-        Method helps compute the MSE between two N-d vectors and is used to make the
-        Helps facilitate fast computation.                 
-        """
-        check = cp.array(self.encoder_injected.predict(self.test))
-        anchor = cp.array(self.encoder_injected.predict(self.anchor))
-        for j in range(0, self.test.shape[0]-1):
-            # index = int(random()*10)
-            index = 0
-            self.values[j]=(cp.square(cp.subtract(anchor[index:index+1,:], check[j:j+1,:]))).mean()   
-        return self.values
-
+   
     def convert_np_to_mhz(self, np_index, f_stop,f_start, n_chans):
         width = (f_stop-f_start)/n_chans
         return width*np_index + f_start
