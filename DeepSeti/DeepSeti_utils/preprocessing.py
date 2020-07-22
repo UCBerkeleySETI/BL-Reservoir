@@ -55,7 +55,7 @@ class DataProcessing(object):
             data = h5["data"][self.t_start:self.t_stop,:,self.chan_start_idx:self.chan_stop_idx]
             self.f_stop = obs.container.f_stop
             self.f_start = obs.container.f_start
-            self.n_chans =obs.header[b'nchans']
+            self.n_chans =obs.header['nchans']
             
             data_temp = np.zeros((8,32, 1, data.shape[2]))
             intervals = [0,32,64,96,128,160,192,224]
