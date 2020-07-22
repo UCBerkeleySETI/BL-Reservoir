@@ -13,7 +13,7 @@ if __name__ == "__main__":
 
   DeepSeti = DeepSeti()
   print(input_file)
-  DeepSeti.load_anchor_npy('encoder_injected_model_Cudda.h5')
+  DeepSeti.load_model('encoder_injected_model_Cudda.h5')
   DeepSeti.load_anchor_npy('anchor.npy')
   DeepSeti.prediction_numpy(test_location=input_file, 
                   top_hits=1,
