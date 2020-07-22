@@ -8,7 +8,7 @@ import sys
 
 if __name__ == "__main__":
   input_file = sys.argv[1]
-  print(input_file)
+
   if len(sys.argv) == 2:
       out_dir = input_file.split(".")[0]
   else:
@@ -22,7 +22,7 @@ if __name__ == "__main__":
   DeepSeti.load_anchor_npy('anchor.npy')
   print("running search")
   DeepSeti.prediction_numpy(test_location=input_file, 
-                  top_hits=1,
+                  top_hits=100,
                   target_name=input_file, 
                   output_folder=out_dir)
   print("search complete")

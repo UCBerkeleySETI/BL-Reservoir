@@ -141,8 +141,8 @@ class DeepSeti(object):
         data = {'hit':hit,'freq':freq_list,'confidence':confidence}
         
         df = pd.DataFrame(data, columns = ['hit', 'freq', 'confidence'])
-        df.to_pickle(output_folder+"info_df.pkl")
-        np.save(output_folder+"filtered.npy", stack) 
+        df.to_pickle(output_folder+"/info_df.pkl")
+        np.save(output_folder+"/filtered.npy", stack) 
         
 
 
