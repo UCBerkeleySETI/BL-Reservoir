@@ -4,6 +4,8 @@ from DeepSeti_utils.synthetic import synthetic
 from DeepSeti_utils.predict import predict as prediction_algo
 from DeepSeti_utils.save_model import save_model 
 from DeepSeti_utils.preprocessing import DataProcessing as DataProcessing
+%tensorflow_version 1.x
+import tensorflow as tf
 from keras.models import load_model
 from keras.models import Model
 from keras.layers import Input

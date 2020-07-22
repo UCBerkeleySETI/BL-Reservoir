@@ -1,3 +1,5 @@
+%tensorflow_version 1.x
+import tensorflow as tf
 import numpy as np
 import keras
 import matplotlib.pyplot as plt
