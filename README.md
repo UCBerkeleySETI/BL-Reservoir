@@ -32,6 +32,8 @@ if __name__ == "__main__":
           out_dir = input_file.split(".")[0]
       else:
           out_dir = sys.argv[2]
+      if not os.path.isdir(out_dir):
+        os.mkdir(out_dir)
 ```
 
 This results directory is important as this will be whats uploaded to the storage buckets. 
