@@ -1,6 +1,4 @@
-import wget
 import pandas as pd
-import requests
 from DeepSeti import DeepSeti
 import os 
 import sys
