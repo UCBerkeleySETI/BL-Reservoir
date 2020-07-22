@@ -14,7 +14,6 @@ RUN docker-apt-install \
      python3-pip \
      git \
      curl
-RUN pip3 install zmq tqdm pandas wget google-cloud-storage hdf5plugin
 
 RUN mkdir /code
 WORKDIR /code
