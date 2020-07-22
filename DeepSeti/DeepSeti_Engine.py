@@ -13,6 +13,8 @@ if __name__ == "__main__":
       out_dir = input_file.split(".")[0]
   else:
       out_dir = sys.argv[2]
+  if not os.path.isdir(out_dir):
+        os.mkdir(out_dir)
 
   DeepSeti = DeepSeti()
   print(input_file)
