@@ -53,8 +53,8 @@ class DeepSeti(object):
     
     def load_model_function(self, model_location):
         self.model_loaded = load_model(model_location)
-    load_anchor
-    def (self, anchor_location):
+    
+    def load_anchor(self, anchor_location):
         dp_1 = DataProcessing()
         self.anchor = dp_1.load_data(anchor_location)
         self.anchor_value = self.model_loaded.predict(self.anchor)
@@ -157,27 +157,25 @@ class DeepSeti(object):
         start_time = time.time()
         predict = prediction_algo(test=self.test, model_loaded=self.model_loaded )
         self.values = predict.compute_distance_preloaded(anchor = self.anchor_value)
-        self.hits = predict.max_index( f_start=f_start, f_stop=f_stop, n_chan_width=n_chan, top = top_hits)
+        self.hits, confidence = predict.max_index( f_start=f_start, f_stop=f_stop, n_chan_width=n_chan, top = top_hits)
 
     
         data = {}  
         freq_list = []   
         hit =[]
-        confidence = []
+        
         
         stack = np.zeros((top_hits,self.test.shape[1],self.test.shape[3] ))
         for i in range(0,top_hits):
             stack[i,:,:] = self.test[self.hits[i],:,0,:]
-            
             np_index_start = int(self.hits[i]*4)-16
             np_index_end = int(self.hits[i]*4)+16
             freq_start = self.convert_index_to_mhz(np_index =np_index_start , f_stop=f_stop,f_start=f_start, n_chans=n_chan)
             freq_end = self.convert_index_to_mhz(np_index =np_index_end , f_stop=f_stop,f_start=f_start, n_chans=n_chan)
             freq_list.append(freq_start)
             hit.append(i)
-            confidence.append()
         data = {'hit':hit,'freq':freq_list,'confidence':confidence}
-
+        
         df = pd.DataFrame(data, columns = ['hit', 'freq', 'confidence'])
         df.to_pickle(output_folder+"info_df.pkl")
         np.save(output_folder+"filtered.npy", stack) 
@@ -187,7 +185,6 @@ class DeepSeti(object):
             
         
     def feature_similarity(self, test_location, anchor_location, top_hits, target_name, output_folder, numpy_folder):
-
         anchor = np.load(anchor_location)
         dp = DataProcessing()
         self.test = dp.load_data(test_location)

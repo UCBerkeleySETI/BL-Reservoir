@@ -74,14 +74,18 @@ class predict(object):
         f_chan_high = [1350, 2360]
         copy = deepcopy(self.values)
         i=0
+        confidence = []
         while i <top:
             hit = np.argmax(copy)
             hit_freq = self.convert_np_to_mhz(hit, self.f_start,self.f_start, self.n_chan_width)
             if hit_freq< f_chan_low[0] or (hit_freq> f_chan_high[0] and hit_freq< f_chan_low[1]) or hit_freq>f_chan_high[1]:
                 top_hits.append(hit)
                 i+=1
+            confidence.append(copy[hit])
             copy[hit]=0
-        return top_hits
+            
+        return top_hits, confidence
+
     def max_index_nofilter(self, top=3):
         top_hits = []
         copy = self.values
