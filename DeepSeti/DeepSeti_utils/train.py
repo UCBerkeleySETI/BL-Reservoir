@@ -1,4 +1,4 @@
-%tensorflow_version 1.x
+
 import tensorflow as tf
 import keras
 from keras.models import Sequential 
