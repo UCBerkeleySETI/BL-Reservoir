@@ -1,5 +1,5 @@
 # DeepSeti - Semi-Unsupervised SETI Search Tool
-**Written by Peter Ma | [Contact](https://peterma.ca)**
+### Written by Peter Ma | [Contact](https://peterma.ca)
 This is a python implementation of DeepSeti - an algorithm designed to detect anomalies for radio telescope data open sourced by Breakthrough Listen. These python scripts facilitates the custom architecture and training loops required for the DeepSeti algorithm to preform a multichannel search for anomalies. Main objective is to develop software that increases the computational sensitivity and speed to search for 'unknown' anomalies.  **NOTE:** *Currently this code only works for **MID-RES filterbank and h5 files**.*
 
 
