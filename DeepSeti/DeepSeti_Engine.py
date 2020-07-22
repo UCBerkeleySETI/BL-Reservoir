@@ -24,5 +24,6 @@ if __name__ == "__main__":
   DeepSeti.prediction_numpy(test_location=input_file, 
                   top_hits=100,
                   target_name=input_file, 
-                  output_folder=out_dir)
+                  output_folder=out_dir,
+                  numpy_folder= out_dir)
   print("search complete")
