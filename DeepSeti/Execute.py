@@ -41,7 +41,7 @@ while True:
     print(f"Downloaded observation {obs_name}")
     message_dict["message"] = f"Downloaded observation {obs_name}"
     broadcast.send_pyobj(message_dict)
-    fail = os.system(f"cd bl_reservoir/energy_detection && python3 preprocess_fine.py {os.path.join(os.getcwd(), filename)}")
+    fail = os.system(f"cd bl_reservoir/DeepSeti && python3 DeepSeti_Engine.py {os.path.join(os.getcwd(), filename)}")
     if fail:
         message_dict["message"] = f"Algorithm Failed, removing {obs_name}"
         broadcast.send_pyobj(message_dict)
