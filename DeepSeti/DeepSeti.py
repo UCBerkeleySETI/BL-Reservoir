@@ -58,6 +58,10 @@ class DeepSeti(object):
         dp_1 = DataProcessing()
         self.anchor = dp_1.load_data(anchor_location)
         self.anchor_value = self.model_loaded.predict(self.anchor)
+    def load_anchor_npy(self, anchor_location):
+        dp_1 = DataProcessing()
+        self.anchor = np.load(anchor_location)
+        self.anchor_value = self.model_loaded.predict(self.anchor)
 
     def convert_index_to_mhz(self, np_index, f_stop,f_start, n_chans):
         width = (f_stop-f_start)/n_chans
