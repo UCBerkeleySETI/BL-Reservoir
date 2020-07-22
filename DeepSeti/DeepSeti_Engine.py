@@ -13,9 +13,9 @@ if __name__ == "__main__":
 
   DeepSeti = DeepSeti()
   print(input_file)
+  DeepSeti.load_anchor_npy('encoder_injected_model_Cudda.h5')
   DeepSeti.load_anchor_npy('anchor.npy')
-  DeepSeti.prediction_numpy(model_location='encoder_injected_model_Cudda.h5', 
-                  test_location=input_file, 
+  DeepSeti.prediction_numpy(test_location=input_file, 
                   top_hits=1,
                   target_name=input_file, 
                   output_folder=out_dir)
