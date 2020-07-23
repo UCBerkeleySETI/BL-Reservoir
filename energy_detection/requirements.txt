@@ -1,3 +1,4 @@
+wheel
 zmq
 tqdm
 wget

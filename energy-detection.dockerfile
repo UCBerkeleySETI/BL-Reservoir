@@ -13,11 +13,13 @@ RUN docker-apt-install \
      python3-h5py \
      python3-pip \
      git \
-     curl
+     curl \
+     wget
 
 RUN mkdir /code
 WORKDIR /code
 
 COPY . /code/bl_reservoir
+RUN sh /code/bl_reservoir/setup_environment.sh
 
 CMD python3 -m bl_reservoir.$ALG_SUB_PACKAGE.$ALG_NAME
