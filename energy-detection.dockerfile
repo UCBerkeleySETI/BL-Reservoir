@@ -20,6 +20,6 @@ RUN mkdir /code
 WORKDIR /code
 
 COPY . /code/bl_reservoir
-RUN sh /code/bl_reservoir/setup_environment.sh
+RUN sh /code/bl_reservoir/setup_environments.sh
 
 CMD /code/bl_reservoir/$ALG_SUB_PACKAGE/${ALG_SUB_PACKAGE}_env/python3 -m bl_reservoir.$ALG_SUB_PACKAGE.$ALG_NAME
