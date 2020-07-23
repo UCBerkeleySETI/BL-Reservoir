@@ -18,7 +18,7 @@ RUN docker-apt-install \
 
 RUN mkdir /code
 COPY . /code/bl_reservoir
-WORKDIR /bl_reservoir
+WORKDIR /code/bl_reservoir
 RUN ls
 RUN setup_environments.sh
 
