@@ -17,7 +17,7 @@ RUN docker-apt-install \
      wget
 
 RUN apt-get update
-RUN apt-get install python3-venv
+RUN apt-get install -y python3-venv
 
 RUN mkdir /code
 COPY . /code/bl_reservoir
