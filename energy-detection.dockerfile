@@ -19,6 +19,7 @@ RUN docker-apt-install \
 RUN mkdir /code
 COPY . /code/bl_reservoir
 WORKDIR /bl_reservoir
+RUN ls
 RUN setup_environments.sh
 
 CMD /code/bl_reservoir/$ALG_SUB_PACKAGE/${ALG_SUB_PACKAGE}_env/bin/python3 -m bl_reservoir.$ALG_SUB_PACKAGE.$ALG_NAME
