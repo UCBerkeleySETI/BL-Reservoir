@@ -26,7 +26,7 @@ parallel_coarse_chans = 28 # number of coarse channels operated on in parallel
 num_blocks = 308 // parallel_coarse_chans
 block_width = coarse_channel_width * parallel_coarse_chans
 save_png = False
-save_npy = True
+save_npy = False
 
 if __name__ == "__main__":
     g_start = time()
@@ -106,8 +106,8 @@ if __name__ == "__main__":
             for i in range(0, coarse_channel_width - 128, 128):
                 test_window = channel_data[:, i:i+256]
                 s, p = norm_test(test_window)
-                if s > stat_threshold:
-                    res.append([coarse_channel_width*(channel_ind) + i, s, p])
+                #if s > stat_threshold:
+                res.append([coarse_channel_width*(channel_ind) + i, s, p])
             return res
 
         start = time()
@@ -167,7 +167,7 @@ if __name__ == "__main__":
 
     full_df = pd.concat(frame_list, ignore_index=True)
     full_df.set_index("index")
-    full_df.to_pickle(out_dir + "/info_df.pkl")
+    full_df.to_pickle(out_dir + "/all_info_df.pkl")
 
     filtered_df = filter_images(full_df.reset_index(), 4)
     filtered_stack = np.array([])
