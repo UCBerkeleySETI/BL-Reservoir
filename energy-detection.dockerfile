@@ -30,4 +30,5 @@ WORKDIR /code/bl_reservoir
 RUN chmod 777 /code/bl_reservoir/setup_environments.sh
 RUN sh /code/bl_reservoir/setup_environments.sh
 
-CMD /code/bl_reservoir/$ALG_SUB_PACKAGE/${ALG_SUB_PACKAGE}_env/bin/python3 -m bl_reservoir.$ALG_SUB_PACKAGE.$ALG_NAME
+# CMD /code/bl_reservoir/$ALG_SUB_PACKAGE/${ALG_SUB_PACKAGE}_env/bin/python3 -m bl_reservoir.$ALG_SUB_PACKAGE.$ALG_NAME
+CMD python3 -m bl_reservoir.$ALG_SUB_PACKAGE.$ALG_NAME
