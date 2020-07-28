@@ -21,7 +21,7 @@ while True:
     message_dict["start_timestamp"] = time.time()*1000
 
     request_dict = socket.recv_pyobj()
-    data_url = request_dict["message"]
+    data_url = request_dict["input_file_url"]
     # http://blpd13.ssl.berkeley.edu/dl/GBT_58402_67632_HIP65057_fine.h5
     temp_url = data_url
     temp_url = temp_url.replace(".","")
