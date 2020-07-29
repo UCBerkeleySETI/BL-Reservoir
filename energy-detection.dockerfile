@@ -19,7 +19,6 @@ RUN pip3 install zmq tqdm pandas wget google-cloud-storage hdf5plugin
 RUN mkdir /code
 WORKDIR /code
 
-RUN git clone https://github.com/FX196/SETI-Energy-Detection.git
-COPY . /code/alien_hunting_algs
+COPY . /code/bl_reservoir
 
-CMD python3 -m alien_hunting_algs.$ALG_SUB_PACKAGE.$ALG_NAME
+CMD python3 -m bl_reservoir.$ALG_SUB_PACKAGE.$ALG_NAME
