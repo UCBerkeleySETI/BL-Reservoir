@@ -7,6 +7,8 @@ import pickle
 import logging
 from .. import upload
 
+logging.basicConfig(filename='compute_pod.log', level=logging.INFO)
+
 print("Running")
 
 context = zmq.Context()
