@@ -5,9 +5,10 @@ import wget
 import time
 import pickle
 import logging
+import sys
 from .. import upload
 
-logging.basicConfig(filename='compute_pod.log', level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 print("Running")
 
