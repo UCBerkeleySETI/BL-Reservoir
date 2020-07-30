@@ -37,7 +37,7 @@ while True:
     temp_url = temp_url.replace("http","")
     temp_url = temp_url.replace("h5","")
     message_dict["url"] = temp_url
-    print(f"Received request to process {data_url}")
+    logging.info(f"Received request to process {data_url}")
     message_dict["message"] = f"Received request to process {data_url}"
     broadcast.send_pyobj(message_dict)
 
@@ -45,7 +45,7 @@ while True:
     filename = wget.download(data_url)
     obs_name = os.path.splitext(filename)[0]
 
-    print(f"Downloaded observation {obs_name}")
+    logging.info(f"Downloaded observation {obs_name}")
     message_dict["message"] = f"Downloaded observation {obs_name}"
     broadcast.send_pyobj(message_dict)
     fail = os.system(f"cd bl_reservoir/energy_detection && python3 energy_detection_fine_dry_run.py {os.path.join(os.getcwd(), filename)} /buckets/bl-scale/{obs_name}")
@@ -53,12 +53,13 @@ while True:
         message_dict["message"] = f"Algorithm Failed, removing {obs_name}"
         broadcast.send_pyobj(message_dict)
         os.remove(filename)
-        print(f"Algorithm Failed, removed {obs_name}")
+        logging.info(f"Algorithm Failed, removed {obs_name}")
         continue
 
     os.remove(filename)
     end = time.time()
 
+    logging.info("Energy Detection Finished")
     message_dict["done"] = True
     message_dict["target"] = obs_name
     message_dict["message"] = f"Energy Detection and Result Upload finished in {end-start} seconds. Results uploaded to gs://bl-scale/{obs_name}"

@@ -8,7 +8,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN docker-apt-install \
      python3-setuptools \
      python3-scipy \
-     python3-numpy \
      python3-matplotlib \
      python3-bitshuffle \
      python3-h5py \
@@ -17,7 +16,7 @@ RUN docker-apt-install \
      curl \
      wget
 
-RUN pip3 install zmq tqdm pandas wget google-cloud-storage hdf5plugin
+RUN pip3 install zmq tqdm pandas wget google-cloud-storage hdf5plugin numpy==1.16.4
 
 # install gcsfuse
 ENV GCSFUSE_REPO=gcsfuse-bionic
