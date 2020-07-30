@@ -48,18 +48,15 @@ while True:
     print(f"Downloaded observation {obs_name}")
     message_dict["message"] = f"Downloaded observation {obs_name}"
     broadcast.send_pyobj(message_dict)
-    fail = os.system(f"cd bl_reservoir/energy_detection && python3 energy_detection_fine_dry_run.py {os.path.join(os.getcwd(), filename)}")
+    fail = os.system(f"cd bl_reservoir/energy_detection && python3 energy_detection_fine_dry_run.py {os.path.join(os.getcwd(), filename)} /buckets/bl-scale/{obs_name}")
     if fail:
         message_dict["message"] = f"Algorithm Failed, removing {obs_name}"
         broadcast.send_pyobj(message_dict)
         os.remove(filename)
-        os.system(f"rm -rf {obs_name}")
         print(f"Algorithm Failed, removed {obs_name}")
         continue
 
-    upload.upload_dir("bl-scale", os.path.join(os.getcwd(), obs_name))
     os.remove(filename)
-    os.system(f"rm -rf {obs_name}")
     end = time.time()
 
     message_dict["done"] = True

@@ -8,6 +8,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN docker-apt-install \
      python3-setuptools \
      python3-scipy \
+     python3-numpy \
      python3-matplotlib \
      python3-bitshuffle \
      python3-h5py \
