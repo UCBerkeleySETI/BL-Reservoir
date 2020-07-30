@@ -37,5 +37,5 @@ RUN sh /code/bl_reservoir/setup_environments.sh
 
 # run server
 WORKDIR /code
-CMD python3 -m bl_reservoir.$ALG_SUB_PACKAGE.$ALG_NAME
-# CMD python3 -m bl_reservoir.server
+# CMD python3 -m bl_reservoir.$ALG_SUB_PACKAGE.$ALG_NAME
+CMD python3 -m bl_reservoir.server
