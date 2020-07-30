@@ -31,7 +31,7 @@ while True:
 
         # set up response
         message = {"done": False}
-        message["algo_type"] = f'{request["alg_package"]}.{request["alg_name"]}''
+        message["algo_type"] = f'{request["alg_package"]}.{request["alg_name"]}'
         message["start_timestamp"] = time.time()*1000
 
         file_url = request["input_file_url"]
