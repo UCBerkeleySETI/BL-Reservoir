@@ -25,6 +25,7 @@ RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 RUN apt-get update
 RUN apt-get -y install gcsfuse
 RUN apt-get install -y python3-venv python3-wheel
+RUN mkdir /buckets
 RUN mkdir /buckets/bl-scale
 
 # set up virtual environments
