@@ -6,6 +6,7 @@ import time
 import logging
 import sys
 import pickle
+from utils import get_algo_type
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
@@ -32,7 +33,7 @@ while True:
 
         # set up response
         message = {"done": False}
-        message["algo_type"] = f'{request["alg_package"]}.{os.path.splitext(request["alg_name"])[0]}'
+        message["algo_type"] = get_algo_type(request["alg_package"])
         message["start_timestamp"] = time.time()*1000
 
         file_url = request["input_file_url"]
@@ -44,7 +45,7 @@ while True:
         temp_url = temp_url.replace("http","")
         temp_url = temp_url.replace("h5","")
         message["url"] = temp_url
-        logging.info(f'Received request to process {file_url} with {request["alg_package"]}.{request["alg_name"]}')
+        logging.info(f'Received request to process {file_url} with {request["alg_package"]}/{request["alg_name"]}')
         message["message"] = f"Received request to process {file_url}"
         broadcast_socket.send_pyobj(message)
 
@@ -68,7 +69,7 @@ while True:
         os.remove(filename)
         end = time.time()
 
-        logging.info(f'{request["alg_package"]}.{os.path.splitext(request["alg_name"])[0]} finished on {obs_name}')
+        logging.info(f'{request["alg_package"]}/{request["alg_name"]} finished on {obs_name}')
         message["done"] = True
         message["target"] = obs_name
         message["message"] = f"Energy Detection and Result Upload finished in {end-start} seconds. Results uploaded to gs://bl-scale/{obs_name}"

@@ -4,3 +4,5 @@ tqdm
 wget
 google-cloud-storage
 hdf5plugin
+pandas
+numpy==1.16.4
