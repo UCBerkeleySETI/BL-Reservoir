@@ -64,13 +64,13 @@ while True:
             logging.info(f"Algorithm Failed, removed {obs_name} from disk")
             continue
 
-    os.remove(filename)
-    end = time.time()
+        os.remove(filename)
+        end = time.time()
 
-    logging.info(f'{request["alg_package"]}.{request["alg_name"]} finished on {obs_name}')
-    message_dict["done"] = True
-    message_dict["target"] = obs_name
-    message_dict["message"] = f"Energy Detection and Result Upload finished in {end-start} seconds. Results uploaded to gs://bl-scale/{obs_name}"
-    message_dict["processing_time"] = end-start
-    message_dict["object_uri"] = f"gs://bl-scale/{obs_name}"
-    broadcast.send_pyobj(message_dict)
+        logging.info(f'{request["alg_package"]}.{request["alg_name"]} finished on {obs_name}')
+        message_dict["done"] = True
+        message_dict["target"] = obs_name
+        message_dict["message"] = f"Energy Detection and Result Upload finished in {end-start} seconds. Results uploaded to gs://bl-scale/{obs_name}"
+        message_dict["processing_time"] = end-start
+        message_dict["object_uri"] = f"gs://bl-scale/{obs_name}"
+        broadcast.send_pyobj(message_dict)
