@@ -6,7 +6,7 @@ import time
 import logging
 import sys
 import pickle
-from utils import get_algo_type
+from .utils import get_algo_type
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
