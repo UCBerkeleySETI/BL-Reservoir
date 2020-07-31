@@ -47,6 +47,7 @@ while True:
         message["url"] = temp_url
         logging.info(f'Received request to process {file_url} with {request["alg_package"]}/{request["alg_name"]}')
         message["message"] = f"Received request to process {file_url}"
+        logging.info(f"Sending message to frontend: {message}")
         broadcast_socket.send_pyobj(message)
 
         start = time.time()
