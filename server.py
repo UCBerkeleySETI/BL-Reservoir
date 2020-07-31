@@ -46,7 +46,7 @@ while True:
         message["url"] = temp_url
         logging.info(f'Received request to process {file_url} with {request["alg_package"]}.{request["alg_name"]}')
         message["message"] = f"Received request to process {file_url}"
-        broadcast.send_pyobj(message)
+        broadcast_socket.send_pyobj(message)
 
         start = time.time()
         filename = wget.download(file_url)
@@ -54,13 +54,13 @@ while True:
 
         logging.info(f"Downloaded observation {obs_name}")
         message["message"] = f"Downloaded observation {obs_name}"
-        broadcast.send_pyobj(message)
+        broadcast_socket.send_pyobj(message)
 
         alg_env = f'/code/bl_reservoir/{request["alg_package"]}/{request["alg_package"]}_env/bin/python3'
         fail = os.system(f'cd bl_reservoir/{request["alg_package"]} && {alg_env} {request["alg_name"]} {os.path.join(os.getcwd(), filename)} /buckets/bl-scale/{obs_name}')
         if fail:
-            message_dict["message"] = f"Algorithm Failed, removing {obs_name}"
-            broadcast.send_pyobj(message_dict)
+            message["message"] = f"Algorithm Failed, removing {obs_name}"
+            broadcast_socket.send_pyobj(message)
             os.remove(filename)
             logging.info(f"Algorithm Failed, removed {obs_name} from disk")
             continue
@@ -69,9 +69,9 @@ while True:
         end = time.time()
 
         logging.info(f'{request["alg_package"]}.{os.path.splitext(request["alg_name"])[0]} finished on {obs_name}')
-        message_dict["done"] = True
-        message_dict["target"] = obs_name
-        message_dict["message"] = f"Energy Detection and Result Upload finished in {end-start} seconds. Results uploaded to gs://bl-scale/{obs_name}"
-        message_dict["processing_time"] = end-start
-        message_dict["object_uri"] = f"gs://bl-scale/{obs_name}"
-        broadcast.send_pyobj(message_dict)
+        message["done"] = True
+        message["target"] = obs_name
+        message["message"] = f"Energy Detection and Result Upload finished in {end-start} seconds. Results uploaded to gs://bl-scale/{obs_name}"
+        message["processing_time"] = end-start
+        message["object_uri"] = f"gs://bl-scale/{obs_name}"
+        broadcast_socket.send_pyobj(message)
