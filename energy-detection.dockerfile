@@ -16,7 +16,7 @@ RUN docker-apt-install \
      curl \
      wget
 
-# RUN pip3 install zmq tqdm pandas wget google-cloud-storage hdf5plugin numpy==1.16.4
+RUN pip3 install zmq tqdm pandas wget google-cloud-storage hdf5plugin numpy==1.16.4
 
 # install gcsfuse
 ENV GCSFUSE_REPO=gcsfuse-bionic
