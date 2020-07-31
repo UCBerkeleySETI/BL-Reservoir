@@ -5,6 +5,7 @@ import wget
 import time
 import logging
 import sys
+import pickle
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
@@ -31,7 +32,7 @@ while True:
 
         # set up response
         message = {"done": False}
-        message["algo_type"] = f'{request["alg_package"]}.{request["alg_name"]}'
+        message["algo_type"] = f'{request["alg_package"]}.{os.path.splitext(request["alg_name"])[0]}'
         message["start_timestamp"] = time.time()*1000
 
         file_url = request["input_file_url"]
@@ -67,7 +68,7 @@ while True:
         os.remove(filename)
         end = time.time()
 
-        logging.info(f'{request["alg_package"]}.{request["alg_name"]} finished on {obs_name}')
+        logging.info(f'{request["alg_package"]}.{os.path.splitext(request["alg_name"])[0]} finished on {obs_name}')
         message_dict["done"] = True
         message_dict["target"] = obs_name
         message_dict["message"] = f"Energy Detection and Result Upload finished in {end-start} seconds. Results uploaded to gs://bl-scale/{obs_name}"
