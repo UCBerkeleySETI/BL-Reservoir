@@ -67,7 +67,7 @@ while True:
     os.remove(filename)
     end = time.time()
 
-    logging.info(f'{request["alg_package"]}.{request["alg_name"]} finished on {obs_name}'')
+    logging.info(f'{request["alg_package"]}.{request["alg_name"]} finished on {obs_name}')
     message_dict["done"] = True
     message_dict["target"] = obs_name
     message_dict["message"] = f"Energy Detection and Result Upload finished in {end-start} seconds. Results uploaded to gs://bl-scale/{obs_name}"
