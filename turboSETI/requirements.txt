@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-cython
-=======
 Cython
->>>>>>> 79725ce870086f186d4a28a55dcd49a5270f927b
 astropy
 pandas
 toolz
@@ -17,7 +13,3 @@ PyYAML==5.3.1
 pycocotools==2.0.1
 scikit-image==0.17.2
 ipython==7.16.1
-<<<<<<< HEAD
-=======
-git+https://github.com/UCBerkeleySETI/turbo_seti
->>>>>>> 79725ce870086f186d4a28a55dcd49a5270f927b
