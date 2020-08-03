@@ -1,6 +1,7 @@
 import zmq
 import time
 import os
+import logger
 
 print("Running")
 

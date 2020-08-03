@@ -2,8 +2,13 @@ import zmq
 import time
 import os
 import wget
-import time 
+import time
+import pickle
+import logging
+import sys
 from .. import upload
+
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 print("Running")
 
@@ -19,9 +24,11 @@ while True:
     message_dict = {"done": False}
     message_dict["algo_type"] = "Energy-Detection"
     message_dict["start_timestamp"] = time.time()*1000
-    
-    request_dict = socket.recv_pyobj()
-    data_url = request_dict["message"]
+
+    request = socket.recv()
+    logging.info(f"Serial request: {request}")
+    request_dict = pickle.loads(request)
+    data_url = request_dict["input_file_url"]
     # http://blpd13.ssl.berkeley.edu/dl/GBT_58402_67632_HIP65057_fine.h5
     temp_url = data_url
     temp_url = temp_url.replace(".","")
@@ -30,31 +37,29 @@ while True:
     temp_url = temp_url.replace("http","")
     temp_url = temp_url.replace("h5","")
     message_dict["url"] = temp_url
-    print(f"Received request to process {data_url}")
+    logging.info(f"Received request to process {data_url}")
     message_dict["message"] = f"Received request to process {data_url}"
     broadcast.send_pyobj(message_dict)
 
     start = time.time()
     filename = wget.download(data_url)
     obs_name = os.path.splitext(filename)[0]
-    
-    print(f"Downloaded observation {obs_name}")
+
+    logging.info(f"Downloaded observation {obs_name}")
     message_dict["message"] = f"Downloaded observation {obs_name}"
     broadcast.send_pyobj(message_dict)
-    fail = os.system(f"cd bl_reservoir/energy_detection && python3 preprocess_fine.py {os.path.join(os.getcwd(), filename)}")
+    fail = os.system(f"cd bl_reservoir/energy_detection && python3 energy_detection_fine_dry_run.py {os.path.join(os.getcwd(), filename)} /buckets/bl-scale/{obs_name}")
     if fail:
         message_dict["message"] = f"Algorithm Failed, removing {obs_name}"
         broadcast.send_pyobj(message_dict)
         os.remove(filename)
-        os.system(f"rm -rf {obs_name}")
-        print(f"Algorithm Failed, removed {obs_name}")
+        logging.info(f"Algorithm Failed, removed {obs_name}")
         continue
 
-    upload.upload_dir("bl-scale", os.path.join(os.getcwd(), obs_name))
     os.remove(filename)
-    os.system(f"rm -rf {obs_name}")
     end = time.time()
 
+    logging.info("Energy Detection Finished")
     message_dict["done"] = True
     message_dict["target"] = obs_name
     message_dict["message"] = f"Energy Detection and Result Upload finished in {end-start} seconds. Results uploaded to gs://bl-scale/{obs_name}"
