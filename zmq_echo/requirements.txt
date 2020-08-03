@@ -1,0 +1,6 @@
+wheel
+zmq
+tqdm
+wget
+google-cloud-storage
+hdf5plugin
