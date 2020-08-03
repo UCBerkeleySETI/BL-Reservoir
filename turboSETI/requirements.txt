@@ -1,5 +1,5 @@
+Cython
 astropy
-cython
 pandas
 toolz
 fsspec
