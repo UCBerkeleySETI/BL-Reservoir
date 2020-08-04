@@ -1,3 +1,4 @@
+wheel
 Cython
 astropy
 pandas
@@ -8,7 +9,7 @@ dask[bag]
 blimpy==2.0.0
 matplotlib==3.2.2
 numpy==1.18.5
-opencv-python==4.3.0.36
+opencv-python
 PyYAML==5.3.1
 pycocotools==2.0.1
 scikit-image==0.17.2
