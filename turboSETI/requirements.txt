@@ -13,4 +13,3 @@ PyYAML==5.3.1
 pycocotools==2.0.1
 scikit-image==0.17.2
 ipython==7.16.1
-git+https://github.com/UCBerkeleySETI/turbo_seti
