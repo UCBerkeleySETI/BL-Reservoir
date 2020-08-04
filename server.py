@@ -48,7 +48,7 @@ while True:
         logging.info(f'Received request to process {file_url} with {request["alg_package"]}/{request["alg_name"]}')
         message["message"] = f'Received request to process {file_url} with {request["alg_package"]}/{request["alg_name"]}'
         logging.info(f"Sending message to frontend: {message}")
-        broadcast_socket.send_pyobj(message)
+        broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
 
         start = time.time()
         filename = wget.download(file_url)
@@ -56,13 +56,13 @@ while True:
 
         logging.info(f"Downloaded observation {obs_name}")
         message["message"] = f"Downloaded observation {obs_name}"
-        broadcast_socket.send_pyobj(message)
+        broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
 
         alg_env = f'/code/bl_reservoir/{request["alg_package"]}/{request["alg_package"]}_env/bin/python3'
         fail = os.system(f'cd bl_reservoir/{request["alg_package"]} && {alg_env} {request["alg_name"]} {os.path.join(os.getcwd(), filename)} /buckets/bl-scale/{obs_name}')
         if fail:
             message["message"] = f"Algorithm Failed, removing {obs_name}"
-            broadcast_socket.send_pyobj(message)
+            broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
             os.remove(filename)
             logging.info(f"Algorithm Failed, removed {obs_name} from disk")
             continue
@@ -76,4 +76,4 @@ while True:
         message["message"] = f'{request["alg_package"]}/{request["alg_name"]} finished in {end-start} seconds. Results uploaded to gs://bl-scale/{obs_name}'
         message["processing_time"] = end-start
         message["object_uri"] = f"gs://bl-scale/{obs_name}"
-        broadcast_socket.send_pyobj(message)
+        broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
