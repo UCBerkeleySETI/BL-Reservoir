@@ -1,0 +1,2 @@
+git+https://github.com/UCBerkeleySETI/turbo_seti
+git+https://github.com/UCBerkeleySETI/blimpy

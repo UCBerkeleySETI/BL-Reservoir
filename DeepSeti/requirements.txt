@@ -25,7 +25,7 @@ sklearn-pandas==1.8.0
 tensor2tensor==1.14.1
 tensorboard==1.15.0
 tensorboardcolab==0.0.22
-tensorflow==1.15.2
+tensorflow
 tensorflow-addons==0.8.3
 tensorflow-datasets==2.1.0
 tensorflow-estimator==1.15.1
@@ -42,4 +42,3 @@ torchtext==0.3.1
 torchvision==0.5.0
 tornado==4.5.3
 tqdm==4.38.0
-
