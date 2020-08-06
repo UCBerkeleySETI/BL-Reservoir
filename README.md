@@ -1,25 +1,9 @@
 # BL-Reservoir
 BL Reservoir is a repository of tools we've developed to search through our data in new and different ways. Algorithms developed will be packaged into a docker image, and made avaliable for execution on GCP's cloud computing platform to scale SETI searches. To trigger the execution of various algorithms, BL@Scale facilitates the scaling of such products.
 
-## Connecting Your Code
+## Adding Your Environment
 
-First we need you to create a single executable python script to run when the kubernetes pods get triggered to process your data. An example of this is the Energy Detection Algorithm.
-It contains two scripts of interest, `preprocess_fine.py` and `energy_detection.py`. The `energy_detection.py` is the script that's ran when the kubernetes pods are triggered and it manages the 
-data used for the `preprocess_fine.py` which is then called on. 
-You can see this in the `energy_detection.py` where it runs the following line
-
-```
-fail = os.system(f"cd alien_hunting_algs/energy_detection && python3 preprocess_fine.py {os.path.join(os.getcwd(), filename)}")
-```
-The `preprocess_fine.py` script actually does the "searching" whereas the `energy_detection.py` script facilitates the connection for the search. 
-
-**Everything else about the script will be the same for all algorithms doing a search**.
-
-### Uploading Results From Your Code
-Let's say you've ran your code, how does it get uploaded so we can see the results? Well in the same `energy_detection.py` script the entire directory of which the results are saved in the instance are uploaded to the BL-Scale Google Storage bucket. This will then be displayed on the front end. 
-```
-upload.upload_dir("bl-scale", os.path.join(os.getcwd(), obs_name))
-```
+Users will need to add their own sub-directory containing a `requirements.txt` file to specify their Python environment. Our `setup_environments.sh` script will make a Python virtual environment inside your sub-directory when the docker image builds. e.g. `energy_detection/requirements.txt` will generate a virtual environment located in `energy_detection/energy_detection_env`.
 
 ## Packaging the Code
 
@@ -37,6 +21,11 @@ if __name__ == "__main__":
 ```
 
 This results directory is important as this will be whats uploaded to the storage buckets. 
+
+You code will be called as a command line utility in the form of `python3 script.py <input_file> <output_directory>` inside the compute pod. Currently, we require your code to conform to this interface, but we'll have a more flexible interface in the future.
+
+### Uploading Results From Your Code
+Let's say you've ran your code, how does it get uploaded so we can see the results? We use [FUSE mounts](https://cloud.google.com/storage/docs/gcs-fuse) to allow your code to write directly to our public accesible storage bucket, [bl-scale](https://console.cloud.google.com/storage/browser/bl-scale).
 
 ### Format of Results 
 If you want the results to be displayed on the front end, it should follow this standard format.
