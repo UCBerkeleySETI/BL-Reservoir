@@ -7,7 +7,7 @@ from time import time
 import pickle
 from multiprocessing import Pool
 
-from utils import *
+from utils import read_header, norm_test, remove_channel_bandpass
 import sys
 import os
 
@@ -61,8 +61,8 @@ if __name__ == "__main__":
     for block_num in tqdm(range(num_blocks)):
         print(f"Processing coarse channels {block_num * parallel_coarse_chans}-{(block_num + 1) * parallel_coarse_chans}")
         block_data = hf["data"][:, 0,
-        block_num*parallel_coarse_chans*coarse_channel_width:
-        (block_num+1)*parallel_coarse_chans*coarse_channel_width]
+                                block_num*parallel_coarse_chans*coarse_channel_width:
+                                (block_num+1)*parallel_coarse_chans*coarse_channel_width]
         print("Data loaded, processing")
 
         start = time()
@@ -78,7 +78,7 @@ if __name__ == "__main__":
         def clean(channel_ind):
             # print("%s processing channel %d of %s" % (current_process().name, channel_ind, block_file))
             cleaned_block = remove_channel_bandpass(block_data[:, coarse_channel_width*(channel_ind):coarse_channel_width*(channel_ind+1)],
-                           channels[channel_ind], coarse_channel_width)
+                                                    channels[channel_ind], coarse_channel_width)
             return cleaned_block
 
         def clean_block_bandpass():

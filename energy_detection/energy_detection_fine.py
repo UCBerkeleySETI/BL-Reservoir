@@ -10,7 +10,7 @@ from time import time
 from multiprocessing import Pool, current_process
 import pickle
 
-from utils import *
+from utils import read_header, norm_test, remove_channel_bandpass
 import sys
 import os
 
@@ -19,10 +19,10 @@ import os
 #     print("Using cupy")
 
 # Hyperparameters
-coarse_channel_width=1048576
+coarse_channel_width = 1048576
 threshold = 1e-80
 stat_threshold = 2048
-parallel_coarse_chans = 28 # number of coarse channels operated on in parallel
+parallel_coarse_chans = 28  # number of coarse channels operated on in parallel
 num_blocks = 308 // parallel_coarse_chans
 block_width = coarse_channel_width * parallel_coarse_chans
 save_png = False
@@ -57,13 +57,13 @@ if __name__ == "__main__":
 
         def read_coarse_channel(channel_num):
             hf = h5py.File(input_file, "r")
-            read_data =  hf["data"][:, 0, channel_num * 1024*1024 : (channel_num+1) * 1024*1024]
+            read_data = hf["data"][:, 0, channel_num * 1024*1024: (channel_num+1) * 1024*1024]
             hf.close()
             return read_data
 
         with Pool(min(parallel_coarse_chans, os.cpu_count())) as p:
             block_data = np.concatenate(p.map(read_coarse_channel,
-                range(block_num * parallel_coarse_chans, (block_num + 1) * parallel_coarse_chans)), axis=1)
+                                              range(block_num * parallel_coarse_chans, (block_num + 1) * parallel_coarse_chans)), axis=1)
         end = time()
         print(f"Data loaded in {end - start:.4f} seconds, processing")
 
@@ -77,18 +77,16 @@ if __name__ == "__main__":
         integrated = np.mean(block_data, axis=0)
         channels = np.reshape(integrated, (-1, coarse_channel_width))
 
-
         def clean(channel_ind):
             # print("%s processing channel %d of %s" % (current_process().name, channel_ind, block_file))
-            cleaned_block =  remove_channel_bandpass(block_data[:, coarse_channel_width*(channel_ind):coarse_channel_width*(channel_ind+1)],
-                           channels[channel_ind], coarse_channel_width)
+            cleaned_block = remove_channel_bandpass(block_data[:, coarse_channel_width*(channel_ind):coarse_channel_width*(channel_ind+1)],
+                                                    channels[channel_ind], coarse_channel_width)
             return cleaned_block
 
         def clean_block_bandpass():
             with Pool(min(parallel_coarse_chans, os.cpu_count())) as p:
                 cleaned = p.map(clean, range(parallel_coarse_chans))
             return cleaned
-
 
         cleaned_block_data = clean_block_bandpass()
         cleaned_block_data = np.concatenate(cleaned_block_data, axis=1)
@@ -114,13 +112,12 @@ if __name__ == "__main__":
         with Pool(min(parallel_coarse_chans, os.cpu_count())) as p:
             chan_hits = p.map(threshold_hits, range(parallel_coarse_chans))
         end = time()
-        print("Stamps filtered in %.4f seconds" %(end-start))
+        print("Stamps filtered in %.4f seconds" % (end-start))
 
         vals_frame = pd.DataFrame(sum(chan_hits, []), columns=["index", "statistic", "pvalue"])
         vals_frame["index"] += block_num*block_width
         vals_frame["freqs"] = vals_frame["index"].map(lambda x: freqs[x])
         frame_list.append(vals_frame)
-
 
         print("Saving results")
         # def save_stamps(channel_ind):
@@ -129,6 +126,7 @@ if __name__ == "__main__":
         #         i, s, p = res
         #         plt.imsave((filtered_dir+"%d/%d.png" % (block_num, block_num*block_width + i)), cleaned_block_data[:, i:i+256])
         #         # np.save((filtered_dir+"%d/%d.npy" % (block_num, block_num*block_width + i)), data[:, i:i+200])
+
         def aggregate_npy(channel_ind):
             inds = map(lambda x: x[0], chan_hits[channel_ind])
             return np.array([cleaned_block_data[:, ind:ind+256] for ind in inds])
@@ -148,17 +146,17 @@ if __name__ == "__main__":
         del channels
         del cleaned_block_data
 
-    #returns dataframe of 3*n filtered images
+    # returns dataframe of 3*n filtered images
     def filter_images(df, n):
-        #filter 1000 to 1400 freqs
+        # filter 1000 to 1400 freqs
         freq_1000_1400 = df[(df["freqs"] >= 1000) & (df["freqs"] <= 1400)]
         freq_1000_1400 = freq_1000_1400.sort_values("statistic", ascending=False).head(n)
 
-        #filter 1400 to 1700 freqs
+        # filter 1400 to 1700 freqs
         freq_1400_1700 = df[(df["freqs"] > 1400) & (df["freqs"] <= 1700)]
         freq_1400_1700 = freq_1400_1700.sort_values("statistic", ascending=False).head(n)
 
-        #filter 1700 plus freqs
+        # filter 1700 plus freqs
         freq_1700 = df[df["freqs"] > 1700]
         freq_1700 = freq_1700.sort_values("statistic", ascending=False).head(n)
 
