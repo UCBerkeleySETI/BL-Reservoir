@@ -44,7 +44,8 @@ while True:
         temp_url = temp_url.replace("/","")
         temp_url = temp_url.replace("http","")
         temp_url = temp_url.replace("h5","")
-        message["url"] = temp_url
+        message["url"] = file_url
+        message["filename"] = file_url.split("/")[-1]
         logging.info(f'Received request to process {file_url} with {request["alg_package"]}/{request["alg_name"]}')
         message["message"] = f'Received request to process {file_url} with {request["alg_package"]}/{request["alg_name"]}'
         logging.info(f"Sending message to frontend: {message}")
@@ -71,9 +72,10 @@ while True:
         end = time.time()
 
         logging.info(f'{request["alg_package"]}/{request["alg_name"]} finished on {obs_name}')
-        message["done"] = True
         message["target"] = obs_name
         message["message"] = f'{request["alg_package"]}/{request["alg_name"]} finished in {end-start} seconds. Results uploaded to gs://bl-scale/{obs_name}'
         message["processing_time"] = end-start
         message["object_uri"] = f"gs://bl-scale/{obs_name}"
+        broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
+        message["done"] = True
         broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
