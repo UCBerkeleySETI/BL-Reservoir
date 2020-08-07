@@ -31,10 +31,8 @@ while True:
     data_url = request_dict["input_file_url"]
     # http://blpd13.ssl.berkeley.edu/dl/GBT_58402_67632_HIP65057_fine.h5
     temp_url = data_url
+    temp_url = temp_url.split("/")[-1]
     temp_url = temp_url.replace(".","")
-    temp_url = temp_url.replace(":","")
-    temp_url = temp_url.replace("/","")
-    temp_url = temp_url.replace("http","")
     temp_url = temp_url.replace("h5","")
     message_dict["url"] = temp_url
     logging.info(f"Received request to process {data_url}")
