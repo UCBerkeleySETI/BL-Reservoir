@@ -20,7 +20,7 @@ p_threshold = 1e-25
 parallel_coarse_chans = 28
 # number of coarse channels operated on in parallel 49 for 343
 
-num_blocks = 308  # 308
+num_blocks = int(308 / parallel_coarse_chans)  # 308
 
 block_width = coarse_channel_width * parallel_coarse_chans
 
