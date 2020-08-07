@@ -44,7 +44,7 @@ while True:
         temp_url = temp_url.replace("/","")
         temp_url = temp_url.replace("http","")
         temp_url = temp_url.replace("h5","")
-        message["url"] = file_url
+        message["url"] = temp_url
         message["filename"] = file_url.split("/")[-1]
         logging.info(f'Received request to process {file_url} with {request["alg_package"]}/{request["alg_name"]}')
         message["message"] = f'Received request to process {file_url} with {request["alg_package"]}/{request["alg_name"]}'
