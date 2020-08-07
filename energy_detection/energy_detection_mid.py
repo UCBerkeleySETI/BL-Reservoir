@@ -1,33 +1,26 @@
 import numpy as np
 import pandas as pd
-from scipy import stats
-from matplotlib import pyplot as plt
-from bisect import bisect_left
 from tqdm import tqdm
 import h5py
+import hdf5plugin
 from time import time
-from multiprocessing import Pool, current_process
 import pickle
-from blimpy import Waterfall
+from multiprocessing import Pool
 
 from utils import *
 import sys
 import os
 
-
-# Hyperparameters
-obs = Waterfall("/mnt_blpd7/datax2/dl/GBT_57803_83207_HIP3876_mid.h5")
-data = obs.data
-
-coarse_channel_width= np.int(np.round(187.5/64/abs(obs.header['foff'])))
+coarse_channel_width = 1024
 slice_length = 32
 
 p_threshold = 1e-25
 # stat_threshold = 2048
 
-parallel_coarse_chans = 28 # number of coarse channels operated on in parallel 49 for 343
+parallel_coarse_chans = 28
+# number of coarse channels operated on in parallel 49 for 343
 
-num_blocks = int(data.shape[2]/coarse_channel_width) // parallel_coarse_chans #308
+num_blocks = 308  # 308
 
 block_width = coarse_channel_width * parallel_coarse_chans
 
@@ -54,7 +47,7 @@ if __name__ == "__main__":
         pickle.dump(header, f)
         print("Header saved to "+out_dir+"/header.pkl")
 
-#to save clean output, uncomment:
+# to save clean output, uncomment:
 
 #     cleaned_dir = out_dir+"/cleaned"
 #     if not os.path.isdir(cleaned_dir):
@@ -79,15 +72,12 @@ if __name__ == "__main__":
             block_data[:, dc_ind] = (block_data[:, dc_ind+1] + block_data[:, dc_ind-3])/2
             block_data[:, dc_ind-1] = (block_data[:, dc_ind+2] + block_data[:, dc_ind-2])/2
 
-
-
         integrated = np.mean(block_data, axis=0)
         channels = np.reshape(integrated, (-1, coarse_channel_width))
 
-
         def clean(channel_ind):
             # print("%s processing channel %d of %s" % (current_process().name, channel_ind, block_file))
-            cleaned_block =  remove_channel_bandpass(block_data[:, coarse_channel_width*(channel_ind):coarse_channel_width*(channel_ind+1)],
+            cleaned_block = remove_channel_bandpass(block_data[:, coarse_channel_width*(channel_ind):coarse_channel_width*(channel_ind+1)],
                            channels[channel_ind], coarse_channel_width)
             return cleaned_block
 
@@ -95,7 +85,6 @@ if __name__ == "__main__":
             with Pool(min(parallel_coarse_chans, os.cpu_count())) as p:
                 cleaned = p.map(clean, range(parallel_coarse_chans))
             return cleaned
-
 
         cleaned_block_data = clean_block_bandpass()
         cleaned_block_data = np.concatenate(cleaned_block_data, axis=1)
@@ -113,7 +102,7 @@ if __name__ == "__main__":
             for i in range(0, coarse_channel_width - int((slice_length/2)), int((slice_length/2))):
                 test_window = channel_data[:, i:i+slice_length]
                 s, p = norm_test(test_window)
-                if p < p_threshold: # or s > stat_threshold:
+                if p < p_threshold:  # or s > stat_threshold:
                     res.append([coarse_channel_width*(channel_ind) + i, s, p])
             return res
 
@@ -121,7 +110,7 @@ if __name__ == "__main__":
         with Pool(min(parallel_coarse_chans, os.cpu_count())) as p:
             chan_hits = p.map(threshold_hits, range(parallel_coarse_chans))
         end = time()
-        print("Stamps filtered in %.4f seconds" %(end-start))
+        print("Stamps filtered in %.4f seconds" % (end-start))
 
         vals_frame = pd.DataFrame(sum(chan_hits, []), columns=["index", "statistic", "pvalue"])
         vals_frame["block_num"] = block_num
@@ -136,6 +125,7 @@ if __name__ == "__main__":
         #         i, s, p = res
         #         plt.imsave((filtered_dir+"%d/%d.png" % (block_num, block_num*block_width + i)), cleaned_block_data[:, i:i+256])
         #         # np.save((filtered_dir+"%d/%d.npy" % (block_num, block_num*block_width + i)), data[:, i:i+200])
+
         def aggregate_npy(channel_ind):
             inds = map(lambda x: x[0], chan_hits[channel_ind])
             return np.array([cleaned_block_data[:, ind:ind+slice_length] for ind in inds])
