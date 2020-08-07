@@ -29,11 +29,11 @@ save_npy = True
 
 if __name__ == "__main__":
 
-    input_file = "/mnt_blpd7/datax2/dl/GBT_57803_83207_HIP3876_mid.h5"
+    input_file = sys.argv[1]
     if len(sys.argv) == 2:
-        out_dir = "/datax/scratch/fzaidouni/SETI-Energy-Detection/test3_mid"
+        out_dir = input_file.split(".")[0]
     else:
-        out_dir = "/datax/scratch/fzaidouni/SETI-Energy-Detection/test3_mid"
+        out_dir = sys.argv[2]
 
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
