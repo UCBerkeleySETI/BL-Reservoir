@@ -12,7 +12,7 @@ import sys
 import os
 
 coarse_channel_width = 1024
-slice_length = 32
+slice_length = 256
 
 p_threshold = 1e-25
 # stat_threshold = 2048
