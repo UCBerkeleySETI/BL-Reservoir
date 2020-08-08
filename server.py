@@ -28,8 +28,11 @@ while True:
     sockets = dict(poller.poll(2))
     if request_recv_socket in sockets and sockets[request_recv_socket] == zmq.POLLIN:
         serialized = request_recv_socket.recv()
-        logging.debug(f"Received serialized request: {serialized}")
-        request = pickle.loads(serialized)
+        try:
+            request = pickle.loads(serialized)
+            logging.info("Received request: {request}")
+        except pickle.UnpicklingError:
+            logging.info("Malformed serialized request: {serialized}")
 
         # set up response
         message = {"done": False}
@@ -39,11 +42,11 @@ while True:
         file_url = request["input_file_url"]
         # http://blpd13.ssl.berkeley.edu/dl/GBT_58402_67632_HIP65057_fine.h5
         temp_url = file_url
-        temp_url = temp_url.replace(".","")
-        temp_url = temp_url.replace(":","")
-        temp_url = temp_url.replace("/","")
-        temp_url = temp_url.replace("http","")
-        temp_url = temp_url.replace("h5","")
+        temp_url = temp_url.replace(".", "")
+        temp_url = temp_url.replace(":", "")
+        temp_url = temp_url.replace("/", "")
+        temp_url = temp_url.replace("http", "")
+        temp_url = temp_url.replace("h5", "")
         message["url"] = temp_url
         message["filename"] = file_url.split("/")[-1]
         logging.info(f'Received request to process {file_url} with {request["alg_package"]}/{request["alg_name"]}')
@@ -60,7 +63,8 @@ while True:
         broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
 
         alg_env = f'/code/bl_reservoir/{request["alg_package"]}/{request["alg_package"]}_env/bin/python3'
-        fail = os.system(f'cd bl_reservoir/{request["alg_package"]} && {alg_env} {request["alg_name"]} {os.path.join(os.getcwd(), filename)} /buckets/bl-scale/{obs_name}')
+        fail = os.system(
+            f'cd bl_reservoir/{request["alg_package"]} && {alg_env} {request["alg_name"]} {os.path.join(os.getcwd(), filename)} /buckets/bl-scale/{obs_name}')
         if fail:
             message["message"] = f"Algorithm Failed, removing {obs_name}"
             broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
