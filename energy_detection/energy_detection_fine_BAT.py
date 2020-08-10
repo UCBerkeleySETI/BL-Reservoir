@@ -21,7 +21,7 @@ import os
 # Hyperparameters
 coarse_channel_width=1048576
 threshold = 1e-80
-BAT_threshold = np.load("three_channel_final_thresholds_real.npy")
+BAT_threshold = np.load("three_channel_final_thresholds_real.npy") # read in Bayesian Adaptive Threshold for 3-coarse channels
 parallel_coarse_chans = 28 # number of coarse channels operated on in parallel
 num_blocks = 308 // parallel_coarse_chans
 block_width = coarse_channel_width * parallel_coarse_chans
@@ -106,7 +106,10 @@ if __name__ == "__main__":
             for i in range(0, coarse_channel_width - 128, 128):
                 test_window = channel_data[:, i:i+256]
                 s, p = norm_test(test_window)
+                # get the coarse channel number (between 0-307)
                 coarse_num = block_num * parallel_coarse_chans + channel_ind
+                # check if statistic value is greater than the BAT threshold for that coarse num
+                # if yes, keep s-value in final dataframe
                 if s > BAT_threshold[coarse_num]:
                     res.append([coarse_channel_width*(channel_ind) + i, s, p])
             return res
@@ -149,7 +152,7 @@ if __name__ == "__main__":
         del channels
         del cleaned_block_data
 
-    #returns dataframe of 3*n filtered images
+    # returns dataframe of 3*n filtered images
     def filter_images(df, n):
         #filter 1000 to 1400 freqs
         freq_1000_1400 = df[(df["freqs"] >= 1000) & (df["freqs"] <= 1400)]
@@ -168,7 +171,7 @@ if __name__ == "__main__":
 
     full_df = pd.concat(frame_list, ignore_index=True)
     full_df.set_index("index")
-    full_df.to_pickle(out_dir + "/all_info_df.pkl")
+    full_df.to_pickle(out_dir + "/BAT_info_df.pkl")
 
     filtered_df = filter_images(full_df.reset_index(), 4)
     filtered_stack = np.array([])
