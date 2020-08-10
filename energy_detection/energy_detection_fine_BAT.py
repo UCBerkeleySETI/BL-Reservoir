@@ -171,7 +171,7 @@ if __name__ == "__main__":
 
     full_df = pd.concat(frame_list, ignore_index=True)
     full_df.set_index("index")
-    full_df.to_pickle(out_dir + "/BAT_info_df.pkl")
+    full_df.to_pickle(out_dir + "/all_info_df.pkl")
 
     filtered_df = filter_images(full_df.reset_index(), 4)
     filtered_stack = np.array([])
