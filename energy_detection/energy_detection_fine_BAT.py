@@ -152,6 +152,7 @@ if __name__ == "__main__":
         del channels
         del cleaned_block_data
 
+    # Intakes a pandas dataframe
     # returns dataframe of 3*n filtered images
     def filter_images(df, n):
         #filter 1000 to 1400 freqs
@@ -173,17 +174,16 @@ if __name__ == "__main__":
     full_df.set_index("index")
     full_df.to_pickle(out_dir + "/all_info_df.pkl")
 
+    # filter out the full dataframe to include only those with unusual statistics
     filtered_df = filter_images(full_df.reset_index(), 4)
     filtered_stack = np.array([])
 
     if stack_list:
         full_stack = np.concatenate(stack_list)
         filtered_stack = full_stack[filtered_df.index.values]
-        # for i in np.arange(0, len(full_stack)):
-        #     if i in filtered_df.index.values:
-        #         filtered_stack = np.append(filtered_stack, full_stack[i])
-
+        # all images saved in 3-dimensional npy array with shape (pixel width, pixel length, number of images)
         np.save(out_dir + "/filtered.npy", full_stack)
+        # only the 12 filtered images saved in 3-d npy array with shape (pixel width, pixel length, number of images)
         np.save(out_dir + "/best_hits.npy", filtered_stack)
 
     g_end = time()
