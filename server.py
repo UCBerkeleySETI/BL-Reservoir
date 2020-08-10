@@ -30,9 +30,10 @@ while True:
         serialized = request_recv_socket.recv()
         try:
             request = pickle.loads(serialized)
-            logging.info("Received request: {request}")
+            logging.info(f"Received request: {request}")
         except pickle.UnpicklingError:
-            logging.info("Malformed serialized request: {serialized}")
+            logging.info(f"Malformed serialized request: {serialized}")
+            continue
 
         # set up response
         message = {"done": False}
