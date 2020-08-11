@@ -67,14 +67,18 @@ while True:
         alg_env = f'/code/bl_reservoir/{request["alg_package"]}/{request["alg_package"]}_env/bin/python3'
         alg_workdir = request.get("workdir", None)
         if "command" not in request:
-            fail = subprocess.call(
-                (f'cd bl_reservoir/{request["alg_package"]} && '
-                 f'{alg_env} {request["alg_name"]} {os.path.join(os.getcwd(), filename)}'
-                 f' /buckets/bl-scale/{obs_name}',
-                 cwd=alg_workdir)
+            if alg_workdir:
+                fail = subprocess.call(
+                    (f'cd bl_reservoir/{request["alg_package"]} && '
+                     f'{alg_env} {request["alg_name"]} {os.path.join(os.getcwd(), filename)}'
+                     f' /buckets/bl-scale/{obs_name}'), cwd=alg_workdir)
+            else:
+                fail = subprocess.call(
+                    (f'cd bl_reservoir/{request["alg_package"]} && '
+                     f'{alg_env} {request["alg_name"]} {os.path.join(os.getcwd(), filename)}'
+                     f' /buckets/bl-scale/{obs_name}'))
         else:
             fail = subprocess.call(f'{request["command"]}')
-
         if fail:
             message["message"] = f"Algorithm Failed, removing {obs_name}"
             broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
