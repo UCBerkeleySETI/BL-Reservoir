@@ -7,7 +7,7 @@ import logging
 import sys
 import pickle
 import subprocess
-from .utils import get_algo_type
+from .utils import get_algo_type, alg_working_directories
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
@@ -65,11 +65,10 @@ while True:
         broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
 
         alg_env = f'/code/bl_reservoir/{request["alg_package"]}/{request["alg_package"]}_env/bin/python3'
-        alg_workdir = request.get("workdir", None)
+        alg_workdir = alg_working_directories.get(request["alg_package"], None)
         if "command" not in request:
             fail = subprocess.call(
-                (f'cd bl_reservoir/{request["alg_package"]} && '
-                 f'{alg_env} {request["alg_name"]} {os.path.join(os.getcwd(), filename)}'
+                (f'{alg_env} {request["alg_name"]} {os.path.join(os.getcwd(), filename)}'
                  f' /buckets/bl-scale/{obs_name}').split(), cwd=alg_workdir)
         else:
             fail = subprocess.call(f'{request["command"]}')
