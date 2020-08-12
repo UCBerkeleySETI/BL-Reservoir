@@ -16,7 +16,9 @@ RUN docker-apt-install \
      curl \
      wget
 
+RUN apt-get install -y apt-utils
 RUN apt-get install -y python3-dev
+
 
 RUN pip3 install zmq tqdm pandas wget google-cloud-storage hdf5plugin numpy==1.16.4
 
