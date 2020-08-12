@@ -4,9 +4,7 @@ name: Build Docker
 # events but only for the master branch
 on:
   push:
-    branches-ignore: [ master ]
-  pull_request:
-    branches-ignore: [ master ]
+    branches: [master]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -28,7 +26,7 @@ jobs:
           registry: gcr.io
           repository: breakthrough-listen-sandbox/bl-scale
           dockerfile: energy-detection.dockerfile
-          tags: energy-detection-latest
+          tags: energy-detection-stable
 
     # Runs a single command using the runners shell
     - name: Build and push Algorithm Image to dockerhub
@@ -38,4 +36,4 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: fx196/bl-scale
           dockerfile: energy-detection.dockerfile
-          tags: energy-detection-latest
+          tags: energy-detection-stable
