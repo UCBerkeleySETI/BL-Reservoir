@@ -9,6 +9,7 @@ RUN apt-get update
 RUN apt-get install -y apt-utils python3 \
  python3-pip \
  python3-dev \
+ python-opencv \
  libhdf5-serial-dev \
  gfortran \
  pkg-config \
