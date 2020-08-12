@@ -1,5 +1,6 @@
 wheel
 cmake
+scikit-build
 Cython
 astropy
 pandas
