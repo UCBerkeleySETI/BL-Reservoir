@@ -6,8 +6,15 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update
 
-RUN apt-get install -y apt-utils python3 python3-pip python3-dev git curl wget
-RUN pip3 install wheel setuptools scipy matplotlib bitshuffle Cython cmake
+RUN apt-get install -y apt-utils python3 \
+ python3-pip \
+ python3-dev \
+ libhdf5-serial-dev \
+ gfortran \
+ pkg-config \
+ git curl wget
+
+RUN pip3 install wheel setuptools scipy matplotlib Cython cmake
 
 
 RUN pip3 install zmq tqdm pandas wget google-cloud-storage hdf5plugin numpy==1.16.4
@@ -17,8 +24,11 @@ RUN apt-get install -y build-essential
 
 # HDF5 fixup
 # Ubuntu 16.04 has a crazy hdf5 setup, needs some massaging, and extra flags to install h5py
+ENV CFLAGS="-I/usr/include/hdf5/serial -L/usr/lib/x86_64-linux-gnu/hdf5/serial"
 RUN ln -s /usr/lib/x86_64-linux-gnu/libhdf5_serial.so /usr/lib/x86_64-linux-gnu/libhdf5.so
 RUN ln -s /usr/lib/x86_64-linux-gnu/libhdf5_serial_hl.so /usr/lib/x86_64-linux-gnu/libhdf5_hl.so
+
+RUN pip3 install git+https://github.com/kiyo-masui/bitshuffle
 
 # install gcsfuse
 ENV GCSFUSE_REPO=gcsfuse-bionic
