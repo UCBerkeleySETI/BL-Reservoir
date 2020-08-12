@@ -34,6 +34,7 @@ RUN pip3 install git+https://github.com/kiyo-masui/bitshuffle
 ENV GCSFUSE_REPO=gcsfuse-bionic
 RUN echo "deb http://packages.cloud.google.com/apt $GCSFUSE_REPO main" | tee /etc/apt/sources.list.d/gcsfuse.list
 RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+RUN apt-get update
 RUN apt-get install -y gcsfuse
 RUN apt-get install -y python3-venv python3-wheel
 RUN mkdir /buckets
