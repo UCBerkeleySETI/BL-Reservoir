@@ -1,23 +1,13 @@
-FROM kernsuite/base:dev
+FROM ubuntu:18.04
 
 USER root
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# install base dependencies
-RUN docker-apt-install \
-     python3-setuptools \
-     python3-scipy \
-     python3-matplotlib \
-     python3-bitshuffle \
-     python3-h5py \
-     python3-pip \
-     git \
-     curl \
-     wget
+RUN apt-get update
 
-RUN apt-get install -y apt-utils
-RUN apt-get install -y python3-dev
+RUN apt-get install -y apt-utils python3 python3-pip python3-dev git curl wget
+RUN pip3 install wheel setuptools scipy matplotlib bitshuffle Cython cmake
 
 
 RUN pip3 install zmq tqdm pandas wget google-cloud-storage hdf5plugin numpy==1.16.4
@@ -34,7 +24,6 @@ RUN ln -s /usr/lib/x86_64-linux-gnu/libhdf5_serial_hl.so /usr/lib/x86_64-linux-g
 ENV GCSFUSE_REPO=gcsfuse-bionic
 RUN echo "deb http://packages.cloud.google.com/apt $GCSFUSE_REPO main" | tee /etc/apt/sources.list.d/gcsfuse.list
 RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-RUN apt-get update
 RUN apt-get install -y gcsfuse
 RUN apt-get install -y python3-venv python3-wheel
 RUN mkdir /buckets
