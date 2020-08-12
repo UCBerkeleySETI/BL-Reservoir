@@ -7,7 +7,7 @@ import logging
 import sys
 import pickle
 import subprocess
-from .utils import get_algo_type, alg_working_directories
+from .utils import get_algo_type, alg_working_directories, get_algo_command_template
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
