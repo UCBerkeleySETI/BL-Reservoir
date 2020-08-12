@@ -13,7 +13,9 @@ RUN apt-get install -y apt-utils python3 \
  libhdf5-serial-dev \
  gfortran \
  pkg-config \
- git curl wget
+ git curl wget \
+ libomp-dev \
+
 
 RUN pip3 install wheel setuptools scipy matplotlib Cython cmake
 
