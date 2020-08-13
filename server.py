@@ -60,12 +60,15 @@ while True:
         filename = wget.download(file_url)
         obs_name = os.path.splitext(filename)[0]
 
-        logging.info(f"Downloaded observation {obs_name}")
-        message["message"] = f"Downloaded observation {obs_name}"
+        logging.info(f"Downloaded file {filename}")
+        message["message"] = f"Downloaded file {filename}"
         broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
 
         alg_workdir = alg_working_directories.get(request["alg_package"], None)
         if "command" not in request:
+            logging.debug('Calling: ')
+            logging.debug(get_algo_command_template(request["alg_package"], request["alg_name"])
+                          (f'/code/{filename}', f'/buckets/bl-scale/{obs_name}/{request["alg_package"]}/{request["alg_name"]}').split())
             fail = subprocess.call(
                 get_algo_command_template(request["alg_package"], request["alg_name"])
                 (f'/code/{filename}', f'/buckets/bl-scale/{obs_name}/{request["alg_package"]}/{request["alg_name"]}').split(), cwd=alg_workdir)
