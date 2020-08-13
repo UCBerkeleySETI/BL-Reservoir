@@ -68,7 +68,7 @@ while True:
         if "command" not in request:
             fail = subprocess.call(
                 get_algo_command_template(request["alg_package"], request["alg_name"])
-                (filename, f'/buckets/bl-scale/{obs_name}').split(), cwd=alg_workdir)
+                (filename, f'/buckets/bl-scale/{obs_name}/{request["alg_package"]}/{request["alg_name"]}').split(), cwd=alg_workdir)
         else:
             fail = subprocess.call(f'{request["command"]}')
         if fail:
@@ -83,7 +83,8 @@ while True:
 
         logging.info(f'{request["alg_package"]}/{request["alg_name"]} finished on {obs_name}')
         message["target"] = obs_name
-        message["message"] = f'{request["alg_package"]}/{request["alg_name"]} finished in {end-start} seconds. Results uploaded to gs://bl-scale/{obs_name}'
+        message["message"] = (f'{request["alg_package"]}/{request["alg_name"]} finished in {end-start} seconds.'
+                              f'Results uploaded to gs://bl-scale/{obs_name}/{request["alg_package"]}/{request["alg_name"]}')
         message["processing_time"] = end-start
         message["object_uri"] = f"gs://bl-scale/{obs_name}"
         broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
