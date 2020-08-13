@@ -32,6 +32,8 @@ while True:
         try:
             request = pickle.loads(serialized)
             logging.info(f"Received request: {request}")
+            if request["alg_name"].endswith(".py"):
+                request["alg_name"] = request["alg_name"].split(".")[0]
         except pickle.UnpicklingError:
             logging.info(f"Malformed serialized request: {serialized}")
             continue

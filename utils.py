@@ -28,6 +28,6 @@ def get_algo_command_template(package_name, alg_name):
     if package_name in standard:
         return lambda input_file, output_file: \
             (f'/code/bl_reservoir/{package_name}/{package_name}_env/bin/python3'
-             f' {alg_name} {input_file} {output_file}')
+             f' {alg_name}.py {input_file} {output_file}')
     else:
         return special[package_name][alg_name]
