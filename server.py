@@ -69,6 +69,7 @@ while True:
             logging.debug('Calling: ')
             logging.debug(get_algo_command_template(request["alg_package"], request["alg_name"])
                           (f'/code/{filename}', f'/buckets/bl-scale/{obs_name}/{request["alg_package"]}/{request["alg_name"]}').split())
+            os.mkdir(f'/buckets/bl-scale/{obs_name}')
             os.mkdir(f'/buckets/bl-scale/{obs_name}/{request["alg_package"]}')
             os.mkdir(f'/buckets/bl-scale/{obs_name}/{request["alg_package"]}/{request["alg_name"]}')
             fail = subprocess.call(
