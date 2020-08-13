@@ -84,7 +84,7 @@ while True:
                     os.mkdir(dir)
                 except FileExistsError:
                     continue
-            subprocess.call(f'mv /results_buffer/* /buckets/bl-scale/{obs_name}/{request["alg_package"]}/{alg_name}'.split())
+            subprocess.call(f'mv /results_buffer/* /buckets/bl-scale/{obs_name}/{request["alg_package"]}/{alg_name}', shell=True)
         else:
             fail = subprocess.call(f'{request["command"]}')
         if fail:
