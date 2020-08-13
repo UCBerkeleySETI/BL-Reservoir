@@ -69,11 +69,6 @@ while True:
             logging.debug('Calling: ')
             logging.debug(get_algo_command_template(request["alg_package"], request["alg_name"])
                           (f'/code/{filename}', '/results_buffer').split())
-            for dir in dirs:
-                try:
-                    os.mkdir(dir)
-                except FileExistsError:
-                    continue
             fail = subprocess.call(
                 get_algo_command_template(request["alg_package"], request["alg_name"])
                                          (f'/code/{filename}', '/results_buffer').split(), cwd=alg_workdir)
@@ -84,6 +79,11 @@ while True:
             dirs = (f'/buckets/bl-scale/{obs_name}',
                     f'/buckets/bl-scale/{obs_name}/{request["alg_package"]}',
                     f'/buckets/bl-scale/{obs_name}/{request["alg_package"]}/{alg_name}')
+            for dir in dirs:
+                try:
+                    os.mkdir(dir)
+                except FileExistsError:
+                    continue
             subprocess.call(f'mv /results_buffer/* /buckets/bl-scale/{obs_name}/{request["alg_package"]}/{alg_name}'.split())
         else:
             fail = subprocess.call(f'{request["command"]}')
