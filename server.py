@@ -64,12 +64,11 @@ while True:
         message["message"] = f"Downloaded observation {obs_name}"
         broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
 
-        alg_env = f'/code/bl_reservoir/{request["alg_package"]}/{request["alg_package"]}_env/bin/python3'
         alg_workdir = alg_working_directories.get(request["alg_package"], None)
         if "command" not in request:
             fail = subprocess.call(
-                (f'{alg_env} {request["alg_name"]} {os.path.join(os.getcwd(), filename)}'
-                 f' /buckets/bl-scale/{obs_name}').split(), cwd=alg_workdir)
+                get_algo_command_template(request["alg_package"], request["alg_name"])
+                (filename, f'/buckets/bl-scale/{obs_name}').split(), cwd=alg_workdir)
         else:
             fail = subprocess.call(f'{request["command"]}')
         if fail:
