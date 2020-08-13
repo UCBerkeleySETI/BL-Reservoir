@@ -12,13 +12,16 @@ special = {
 }
 
 alg_working_directories = {
-    "energy_detection": "/code/bl_reservoir/energy_detection"
+    "energy_detection": "/code/bl_reservoir/energy_detection",
+    "turboSETI": "/code/bl_reservoir/turboSETI/turboSETI_env/lib/python3.6/site-packages/turbo_seti"
 }
 
 
 def get_algo_type(package_name):
     if package_name == "energy_detection":
         return "Energy-Detection"
+    else:
+        return package_name
 
 
 def get_algo_command_template(package_name, alg_name):
