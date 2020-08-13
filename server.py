@@ -68,7 +68,7 @@ while True:
         if "command" not in request:
             fail = subprocess.call(
                 get_algo_command_template(request["alg_package"], request["alg_name"])
-                (filename, f'/buckets/bl-scale/{obs_name}/{request["alg_package"]}/{request["alg_name"]}').split(), cwd=alg_workdir)
+                (f'/code/{filename}', f'/buckets/bl-scale/{obs_name}/{request["alg_package"]}/{request["alg_name"]}').split(), cwd=alg_workdir)
         else:
             fail = subprocess.call(f'{request["command"]}')
         if fail:
