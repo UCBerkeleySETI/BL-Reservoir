@@ -42,6 +42,7 @@ RUN apt-get install -y gcsfuse
 RUN apt-get install -y python3-venv python3-wheel
 RUN mkdir /buckets
 RUN mkdir /buckets/bl-scale
+RUN mkdir /results_buffer
 
 # set up virtual environments
 RUN mkdir /code
