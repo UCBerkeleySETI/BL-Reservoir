@@ -130,7 +130,7 @@ while True:
         message["message"] = (f'{request["alg_package"]}/{request["alg_name"]} finished in {end-start} seconds.'
                               f'Results uploaded to gs://bl-scale/{obs_name}/{request["alg_package"]}/{request["alg_name"]}')
         message["processing_time"] = end-start
-        message["object_uri"] = f"gs://bl-scale/{obs_name}"
+        message["object_uri"] = f"gs://bl-scale/{obs_name}/{request["alg_package"]}/{alg_name}"
         broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
         message["done"] = True
         broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
