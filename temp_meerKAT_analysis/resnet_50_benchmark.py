@@ -31,7 +31,7 @@ print("Loading Windows Samples")
 np_images = np.load('../input/gbt-energy-detection-outputs-fine-resolution/GBT_58202_44201_KEPLER738B_fine_filtered.npy')
 np_images = np.take(np_images,np.random.permutation(np_images.shape[0]),axis=0,out=np_images)
 print(np_images.shape)
-
+temp_stop = time.time()-start
 print("Downloading Resnet 50 model")
 conv_only_model = ResNet50(include_top=False,
                  weights='imagenet',
@@ -39,7 +39,7 @@ conv_only_model = ResNet50(include_top=False,
                  pooling="max")
 # conv_only_model.summary()
 
-
+start = time.time()
 def resize_and_rgb(img, shape=(224, 224)):
   np_images_resized = skimage.transform.resize(image=img, output_shape = shape)
   np_images_resized -= np.min(np_images_resized)
@@ -88,4 +88,4 @@ for i in range(dbscan_labels.shape[0]):
 
 # Getting outliers 
 print(np.count_nonzero(dbscan_labels == -1))
-print("Elapsed time:" + str(time.time()- start))
+print("Elapsed time:" + str(time.time()- start+temp_stop))
