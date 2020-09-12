@@ -40,13 +40,13 @@ if __name__ == "__main__":
         os.mkdir(out_dir)
 
     # read and store the header
-    header = read_header(input_file)
-    n_chans = header["nchans"]
-    i_vals = np.arange(n_chans)
-    freqs = header["foff"] * i_vals + header["fch1"]
-    with open(out_dir+"/header.pkl", "wb") as f:
-        pickle.dump(header, f)
-        print("Header saved to "+out_dir+"/header.pkl")
+    # header = read_header(input_file)
+    # n_chans = header["nchans"]
+    # i_vals = np.arange(n_chans)
+    # freqs = header["foff"] * i_vals + header["fch1"]
+    # with open(out_dir+"/header.pkl", "wb") as f:
+    #     pickle.dump(header, f)
+    #     print("Header saved to "+out_dir+"/header.pkl")
 
     frame_list = []
     stack_list = []
