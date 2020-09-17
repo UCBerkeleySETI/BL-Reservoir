@@ -39,7 +39,8 @@ conv_only_model = ResNet50(include_top=False,
                  input_shape=(32, 256, 3),
                  pooling="max")
 # conv_only_model.summary()
-start = time.time()
+start = time.time() 
+
 def resize_and_rgb(img, shape=(224, 224)):
   np_images_resized = skimage.transform.resize(image=img, output_shape = shape)
   np_images_resized -= np.min(np_images_resized)
@@ -55,6 +56,7 @@ x = resnet50.preprocess_input(converted_img)
 # # Run the image through the deep neural network to make a prediction
 print("Pushing Data through the network")
 predictions = conv_only_model.predict(x)
+
 def DBSCAN_clustering_fit(inputdata):
   dbscan = DBSCAN(eps=0.5, min_samples=3, metric='euclidean', metric_params=None, algorithm='auto', leaf_size=30, p=None, n_jobs=-1)
   prediction = dbscan.fit_predict(inputdata)
@@ -74,3 +76,13 @@ def DBSCAN_clustering_fit(inputdata):
   plt.savefig('density_cluster.png')
   return prediction, dbscan
 print("Density clustering...")
+
+dbscan_labels, dbscan = DBSCAN_clustering_fit(predictions)
+
+dbscan_cluster_members = defaultdict(list)
+for i in range(dbscan_labels.shape[0]):
+    dbscan_cluster_members[dbscan_labels[i]].append(i)
+
+# Getting outliers 
+print(np.count_nonzero(dbscan_labels == -1))
+print("Elapsed time in seconds:" + str(time.time()- start+temp_stop)) 
