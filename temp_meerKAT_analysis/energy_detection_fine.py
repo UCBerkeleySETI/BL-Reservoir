@@ -39,6 +39,15 @@ if __name__ == "__main__":
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
 
+    # read and store the header
+    header = read_header(input_file)
+    n_chans = header["nchans"]
+    i_vals = np.arange(n_chans)
+    freqs = header["foff"] * i_vals + header["fch1"]
+    with open(out_dir+"/header.pkl", "wb") as f:
+        pickle.dump(header, f)
+        print("Header saved to "+out_dir+"/header.pkl")
+
     frame_list = []
     stack_list = []
 
@@ -80,7 +89,7 @@ if __name__ == "__main__":
             return cleaned
 
         # cleaned_block_data = clean_block_bandpass()
-        # cleaned_block_data = np.concatenate(block_data, axis=1)
+        # cleaned_block_data = np.concatenate(cleaned_block_data, axis=1)
         cleaned_block_data = block_data
         # np.save(out_dir+"/cleaned/" + block_file, normalized)
 
@@ -112,6 +121,12 @@ if __name__ == "__main__":
         frame_list.append(vals_frame)
 
         print("Saving results")
+        # def save_stamps(channel_ind):
+        #     # print("%s processing channel %d of %s" % (current_process().name, channel_ind, block_file))
+        #     for res in chan_hits[channel_ind]:
+        #         i, s, p = res
+        #         plt.imsave((filtered_dir+"%d/%d.png" % (block_num, block_num*block_width + i)), cleaned_block_data[:, i:i+256])
+        #         # np.save((filtered_dir+"%d/%d.npy" % (block_num, block_num*block_width + i)), data[:, i:i+200])
 
         def aggregate_npy(channel_ind):
             inds = map(lambda x: x[0], chan_hits[channel_ind])
