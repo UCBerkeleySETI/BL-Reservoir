@@ -79,8 +79,9 @@ if __name__ == "__main__":
                 cleaned = p.map(clean, range(parallel_coarse_chans))
             return cleaned
 
-        cleaned_block_data = clean_block_bandpass()
-        cleaned_block_data = np.concatenate(cleaned_block_data, axis=1)
+        # cleaned_block_data = clean_block_bandpass()
+        # cleaned_block_data = np.concatenate(block_data, axis=1)
+        cleaned_block_data = block_data
         # np.save(out_dir+"/cleaned/" + block_file, normalized)
 
         end = time()
