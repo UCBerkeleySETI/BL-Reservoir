@@ -19,7 +19,7 @@ import os
 #     print("Using cupy")
 
 # Hyperparameters
-coarse_channel_width = 1
+coarse_channel_width = 65536
 threshold = 1e-80
 stat_threshold = 2048
 parallel_coarse_chans = 32  # number of coarse channels operated on in parallel
