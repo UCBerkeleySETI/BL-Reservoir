@@ -38,8 +38,9 @@ if __name__ == "__main__":
 
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
-
-
+    
+    i_vals = np.arange(268435456)
+    freqs = 2.0265579223632812e-06  * i_vals + 543.93359375
     frame_list = []
     stack_list = []
 
