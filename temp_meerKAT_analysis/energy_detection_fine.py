@@ -48,19 +48,20 @@ if __name__ == "__main__":
         print(f"Processing coarse channels {block_num * parallel_coarse_chans}-{(block_num + 1) * parallel_coarse_chans}")
         start = time()
 
-        # def read_coarse_channel(channel_num):
-        #     hf = h5py.File(input_file, "r")
-        #     read_data = hf["data"][:, 0, channel_num * 1024*1024: (channel_num+1) * 1024*1024]
-        #     hf.close()
-        #     return read_data
+        def read_coarse_channel(channel_num):
+                hf = h5py.File(input_file, "r")
+                read_data = hf["data"][:, 0, channel_num *coarse_channel_width: (channel_num+1) * coarse_channel_width]
+                hf.close()
+                return read_data
 
-        # with Pool(min(parallel_coarse_chans, os.cpu_count())) as p:
-        #     block_data = np.concatenate(p.map(read_coarse_channel,
-        #                                       range(block_num * parallel_coarse_chans, (block_num + 1) * parallel_coarse_chans)), axis=1)
-        hf = h5py.File(input_file, "r")
-        read_data = hf["data"][:, 0, :]
-        hf.close()
-        block_data =read_data
+        with Pool(min(parallel_coarse_chans, os.cpu_count())) as p:
+            block_data = np.concatenate(p.map(read_coarse_channel,
+                                            range(block_num * parallel_coarse_chans, (block_num + 1) * parallel_coarse_chans)), axis=1)
+        # hf = h5py.File(input_file, "r")
+        # read_data = hf["data"][:, 0, :]
+        # hf.close()
+        # block_data =read_data
+
         end = time()
         print(f"Data loaded in {end - start:.4f} seconds, processing")
 
