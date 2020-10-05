@@ -39,6 +39,8 @@ if __name__ == "__main__":
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
     
+    print("OUT DIRECTORY ------------------------------------------------------------------------------")
+    print(out_dir)
     i_vals = np.arange(268435456)
     freqs = 2.0265579223632812e-06  * i_vals + 543.93359375
     frame_list = []
@@ -57,10 +59,6 @@ if __name__ == "__main__":
         with Pool(min(parallel_coarse_chans, os.cpu_count())) as p:
             block_data = np.concatenate(p.map(read_coarse_channel,
                                             range(block_num * parallel_coarse_chans, (block_num + 1) * parallel_coarse_chans)), axis=1)
-        # hf = h5py.File(input_file, "r")
-        # read_data = hf["data"][:, 0, :]
-        # hf.close()
-        # block_data =read_data
 
         end = time()
         print(f"Data loaded in {end - start:.4f} seconds, processing")
