@@ -1,5 +1,7 @@
-blimpy==2.0.0
-git+https://github.com/facebookresearch/detectron2.git@a45600f3b1ff2c1c16ba259fcfcdaff07b629379
+torch
+torchvision
+Pillow
+blimpy>=2.0.0
 matplotlib==3.2.2
 numpy==1.18.5
 opencv-python==4.3.0.36
@@ -7,4 +9,4 @@ PyYAML==5.3.1
 pycocotools==2.0.1
 scikit-image==0.17.2
 ipython==7.16.1
-Pillow
+git+https://github.com/facebookresearch/detectron2.git@a45600f3b1ff2c1c16ba259fcfcdaff07b629379
