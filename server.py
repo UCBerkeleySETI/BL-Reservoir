@@ -13,9 +13,9 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 logging.info("Running")
 
 # grab pod metadata
-pod_id = os.environ("POD_ID")
-pod_ip = os.environ("POD_IP")
-scheduler_ip = os.environ("SCHEDULER_IP", "")
+pod_id = os.environ.get("POD_ID")
+pod_ip = os.environ.get("POD_IP")
+scheduler_ip = os.environ.get("SCHEDULER_IP", "")
 
 # set up networking, request_recv_socket pulls in requests,
 # and broadcast_socket sends out status updates via a ZMQ proxy
