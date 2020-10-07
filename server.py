@@ -43,6 +43,7 @@ connect_request["pod_ip"] = pod_ip
 if scheduler_ip:
     connect_request["message"] = f"{pod_id} running at {pod_ip}:5555"
     update_send_socket.send_pyobj(connect_request)
+    logging.info(f"Connection request sent to scheduler at {scheduler_ip}")
 
 # prepare default message
 message = dict()
@@ -60,8 +61,8 @@ while True:
         try:
             request = pickle.loads(serialized)
             logging.info(f"Received request: {request}")
-        except pickle.UnpicklingError:
-            logging.info(f"Malformed serialized request: {serialized}")
+        except (pickle.UnpicklingError, KeyError) as e:
+            logging.info(f"Exception of type {type(e).__name__} occurred with request: {serialized}")
             continue
 
         # set up response
