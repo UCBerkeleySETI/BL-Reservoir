@@ -2,7 +2,6 @@ import zmq
 import time
 import os
 import wget
-import time
 import logging
 import sys
 import pickle
@@ -13,6 +12,11 @@ from .utils import get_algo_type, alg_working_directories, get_algo_command_temp
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 logging.info("Running")
 
+# grab pod metadata
+pod_id = os.environ("POD_ID")
+pod_ip = os.environ("POD_IP")
+scheduler_ip = os.environ("SCHEDULER_IP", "")
+
 # set up networking, request_recv_socket pulls in requests,
 # and broadcast_socket sends out status updates via a ZMQ proxy
 context = zmq.Context()
@@ -21,11 +25,29 @@ request_recv_socket.bind("tcp://*:5555")
 broadcast_socket = context.socket(zmq.PUB)
 broadcast_socket.connect("tcp://10.0.3.141:5559")
 
+if scheduler_ip:
+    update_send_socket = context.socket(zmq.PUSH)
+    update_send_socket.bind(f"tcp://{scheduler_ip}:5510")
+
 # set up poller, for polling messages from request_recv_socket
 poller = zmq.Poller()
 poller.register(request_recv_socket, zmq.POLLIN)
 
 logging.info("Socket connected")
+
+logging.info(f"{pod_id} running at {pod_ip}:5555")
+connect_request = dict()
+connect_request["pod_id"] = pod_id
+connect_request["pod_ip"] = pod_ip
+
+if scheduler_ip:
+    connect_request["message"] = f"{pod_id} running at {pod_ip}:5555"
+    update_send_socket.send_pyobj(connect_request)
+
+# prepare default message
+message = dict()
+message["pod_id"] = pod_id
+message["pod_ip"] = pod_ip
 
 while True:
     # poller polls for 2 miliseconds and processes the request if one is received
@@ -43,7 +65,7 @@ while True:
             continue
 
         # set up response
-        message = {"done": False}
+        message["done"] = False
         message["algo_type"] = get_algo_type(request["alg_package"])
         message["start_timestamp"] = time.time()*1000
 
