@@ -96,7 +96,7 @@ while True:
         if scheduler_ip:
             logging.info("Updating scheduler with status")
             status["IDLE"] = False
-            broadcast_socket.send_multipart([b"STATUS", pickle.dumps(message)])
+            broadcast_socket.send_multipart([b"STATUS", pickle.dumps(status)])
 
         # download the file and record the start time
         start = time.time()
