@@ -27,7 +27,7 @@ broadcast_socket.connect("tcp://10.0.3.141:5559")
 
 if scheduler_ip:
     connect_send_socket = context.socket(zmq.PUSH)
-    connect_send_socket.bind(f"tcp://{scheduler_ip}:5510")
+    connect_send_socket.connect(f"tcp://{scheduler_ip}:5510")
 
 # set up poller, for polling messages from request_recv_socket
 poller = zmq.Poller()
