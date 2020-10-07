@@ -26,8 +26,8 @@ broadcast_socket = context.socket(zmq.PUB)
 broadcast_socket.connect("tcp://10.0.3.141:5559")
 
 if scheduler_ip:
-    update_send_socket = context.socket(zmq.PUSH)
-    update_send_socket.bind(f"tcp://{scheduler_ip}:5510")
+    connect_send_socket = context.socket(zmq.PUSH)
+    connect_send_socket.bind(f"tcp://{scheduler_ip}:5510")
 
 # set up poller, for polling messages from request_recv_socket
 poller = zmq.Poller()
@@ -42,13 +42,16 @@ connect_request["pod_ip"] = pod_ip
 
 if scheduler_ip:
     connect_request["message"] = f"{pod_id} running at {pod_ip}:5555"
-    update_send_socket.send_pyobj(connect_request)
+    connect_send_socket.send_pyobj(connect_request)
     logging.info(f"Connection request sent to scheduler at {scheduler_ip}")
 
 # prepare default message
+status = dict()
+status["pod_id"] = pod_id
+status["pod_ip"] = pod_ip
+status["IDLE"] = True
+
 message = dict()
-message["pod_id"] = pod_id
-message["pod_ip"] = pod_ip
 
 while True:
     # poller polls for 2 miliseconds and processes the request if one is received
@@ -89,6 +92,11 @@ while True:
         # to choose the types of messages they want to receive
         logging.info(f"Sending message to frontend: {message}")
         broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
+
+        if scheduler_ip:
+            logging.info("Updating scheduler with status")
+            status["IDLE"] = False
+            broadcast_socket.send_multipart([b"STATUS", pickle.dumps(message)])
 
         # download the file and record the start time
         start = time.time()
@@ -141,6 +149,11 @@ while True:
             broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
             os.remove(filename)
             logging.info(f"Algorithm Failed, removed {obs_name} from disk")
+
+            if scheduler_ip:
+                logging.info("Updating scheduler with status")
+                status["IDLE"] = True
+                broadcast_socket.send_multipart([b"STATUS", pickle.dumps(message)])
             continue
 
         # delete input file and record finish time
@@ -157,3 +170,14 @@ while True:
         broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
         message["done"] = True
         broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
+
+        if scheduler_ip:
+            logging.info("Updating scheduler with status")
+            status["IDLE"] = True
+            broadcast_socket.send_multipart([b"STATUS", pickle.dumps(message)])
+
+    if int(time.time()) % 60 == 0:
+        if scheduler_ip:
+            logging.info("Updating scheduler with status")
+            status["IDLE"] = True
+            broadcast_socket.send_multipart([b"STATUS", pickle.dumps(message)])
