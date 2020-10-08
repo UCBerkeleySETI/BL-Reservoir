@@ -153,7 +153,7 @@ while True:
             if scheduler_ip:
                 logging.info("Updating scheduler with status")
                 status["IDLE"] = True
-                broadcast_socket.send_multipart([b"STATUS", pickle.dumps(message)])
+                broadcast_socket.send_multipart([b"STATUS", pickle.dumps(status)])
             continue
 
         # delete input file and record finish time
@@ -174,10 +174,10 @@ while True:
         if scheduler_ip:
             logging.info("Updating scheduler with status")
             status["IDLE"] = True
-            broadcast_socket.send_multipart([b"STATUS", pickle.dumps(message)])
+            broadcast_socket.send_multipart([b"STATUS", pickle.dumps(status)])
 
     if int(time.time()) % 60 == 0:
         if scheduler_ip:
             logging.info("Updating scheduler with status")
             status["IDLE"] = True
-            broadcast_socket.send_multipart([b"STATUS", pickle.dumps(message)])
+            broadcast_socket.send_multipart([b"STATUS", pickle.dumps(status)])
