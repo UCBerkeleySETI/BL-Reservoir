@@ -50,6 +50,7 @@ status = dict()
 status["pod_id"] = pod_id
 status["pod_ip"] = pod_ip
 status["IDLE"] = True
+last_update_time = int(time.time())
 
 message = dict()
 
@@ -176,8 +177,8 @@ while True:
             status["IDLE"] = True
             broadcast_socket.send_multipart([b"STATUS", pickle.dumps(status)])
 
-    if int(time.time()) % 60 == 0:
-        if scheduler_ip:
-            logging.info("Updating scheduler with status")
-            status["IDLE"] = True
-            broadcast_socket.send_multipart([b"STATUS", pickle.dumps(status)])
+    if scheduler_ip and int(time.time()) % 60 == 0 and int(time.time()) != last_update_time:
+        logging.info(f"Updating scheduler with status: {status}")
+        status["IDLE"] = True
+        broadcast_socket.send_multipart([b"STATUS", pickle.dumps(status)])
+        last_update_time = int(time.time())
