@@ -2,7 +2,6 @@ import zmq
 import time
 import os
 import wget
-import time
 import logging
 import sys
 import pickle
@@ -13,6 +12,11 @@ from .utils import get_algo_type, alg_working_directories, get_algo_command_temp
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 logging.info("Running")
 
+# grab pod metadata
+pod_id = os.environ.get("POD_ID")
+pod_ip = os.environ.get("POD_IP")
+scheduler_ip = os.environ.get("SCHEDULER_IP", "")
+
 # set up networking, request_recv_socket pulls in requests,
 # and broadcast_socket sends out status updates via a ZMQ proxy
 context = zmq.Context()
@@ -21,11 +25,34 @@ request_recv_socket.bind("tcp://*:5555")
 broadcast_socket = context.socket(zmq.PUB)
 broadcast_socket.connect("tcp://10.0.3.141:5559")
 
+if scheduler_ip:
+    connect_send_socket = context.socket(zmq.PUSH)
+    connect_send_socket.connect(f"tcp://{scheduler_ip}:5510")
+
 # set up poller, for polling messages from request_recv_socket
 poller = zmq.Poller()
 poller.register(request_recv_socket, zmq.POLLIN)
 
 logging.info("Socket connected")
+
+logging.info(f"{pod_id} running at {pod_ip}:5555")
+connect_request = dict()
+connect_request["pod_id"] = pod_id
+connect_request["pod_ip"] = pod_ip
+
+if scheduler_ip:
+    connect_request["message"] = f"{pod_id} running at {pod_ip}:5555"
+    connect_send_socket.send_pyobj(connect_request)
+    logging.info(f"Connection request sent to scheduler at {scheduler_ip}")
+
+# prepare default message
+status = dict()
+status["pod_id"] = pod_id
+status["pod_ip"] = pod_ip
+status["IDLE"] = True
+last_update_time = int(time.time())
+
+message = dict()
 
 while True:
     # poller polls for 2 miliseconds and processes the request if one is received
@@ -38,12 +65,12 @@ while True:
         try:
             request = pickle.loads(serialized)
             logging.info(f"Received request: {request}")
-        except pickle.UnpicklingError:
-            logging.info(f"Malformed serialized request: {serialized}")
+        except (pickle.UnpicklingError, KeyError) as e:
+            logging.info(f"Exception of type {type(e).__name__} occurred with request: {serialized}")
             continue
 
         # set up response
-        message = {"done": False}
+        message["done"] = False
         message["algo_type"] = get_algo_type(request["alg_package"])
         message["start_timestamp"] = time.time()*1000
 
@@ -66,6 +93,11 @@ while True:
         # to choose the types of messages they want to receive
         logging.info(f"Sending message to frontend: {message}")
         broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
+
+        if scheduler_ip:
+            logging.info("Updating scheduler with status")
+            status["IDLE"] = False
+            broadcast_socket.send_multipart([b"STATUS", pickle.dumps(status)])
 
         # download the file and record the start time
         start = time.time()
@@ -118,6 +150,11 @@ while True:
             broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
             os.remove(filename)
             logging.info(f"Algorithm Failed, removed {obs_name} from disk")
+
+            if scheduler_ip:
+                logging.info("Updating scheduler with status")
+                status["IDLE"] = True
+                broadcast_socket.send_multipart([b"STATUS", pickle.dumps(status)])
             continue
 
         # delete input file and record finish time
@@ -134,3 +171,14 @@ while True:
         broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
         message["done"] = True
         broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
+
+        if scheduler_ip:
+            logging.info("Updating scheduler with status")
+            status["IDLE"] = True
+            broadcast_socket.send_multipart([b"STATUS", pickle.dumps(status)])
+
+    if scheduler_ip and int(time.time()) % 60 == 0 and int(time.time()) != last_update_time:
+        logging.info(f"Updating scheduler with status: {status}")
+        status["IDLE"] = True
+        broadcast_socket.send_multipart([b"STATUS", pickle.dumps(status)])
+        last_update_time = int(time.time())

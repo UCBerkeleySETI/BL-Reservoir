@@ -19,12 +19,9 @@ import os
 #     print("Using cupy")
 
 # Hyperparameters
-coarse_channel_width = 1048576
+coarse_channel_width = 2 ** 20
 threshold = 1e-80
 stat_threshold = 2048
-parallel_coarse_chans = 28  # number of coarse channels operated on in parallel
-num_blocks = 308 // parallel_coarse_chans
-block_width = coarse_channel_width * parallel_coarse_chans
 save_png = False
 save_npy = True
 
@@ -48,6 +45,16 @@ if __name__ == "__main__":
         pickle.dump(header, f)
         print("Header saved to "+out_dir+"/header.pkl")
 
+    # calculate number of coarse channels
+    n_coarse_chans = int(n_chans // coarse_channel_width)
+    for i in range(32, 0, -1):
+        if n_coarse_chans % i == 0:
+            parallel_coarse_chans = i
+            print(f"Processing {parallel_coarse_chans} in parallel")
+            break
+    num_blocks = int(n_coarse_chans // parallel_coarse_chans)
+    block_width = coarse_channel_width * parallel_coarse_chans
+
     frame_list = []
     stack_list = []
 
@@ -57,7 +64,7 @@ if __name__ == "__main__":
 
         def read_coarse_channel(channel_num):
             hf = h5py.File(input_file, "r")
-            read_data = hf["data"][:, 0, channel_num * 1024*1024: (channel_num+1) * 1024*1024]
+            read_data = hf["data"][:, 0, channel_num * coarse_channel_width: (channel_num+1) * coarse_channel_width]
             hf.close()
             return read_data
 
@@ -167,8 +174,9 @@ if __name__ == "__main__":
     full_df.set_index("index")
     full_df.to_pickle(out_dir + "/info_df.pkl")
 
-    filtered_df = filter_images(full_df.reset_index(), 4)
-    filtered_stack = np.array([])
+    if n_coarse_chans == 308:
+        filtered_df = filter_images(full_df.reset_index(), 4)
+        filtered_stack = np.array([])
 
     if stack_list:
         full_stack = np.concatenate(stack_list)
@@ -178,7 +186,8 @@ if __name__ == "__main__":
         #         filtered_stack = np.append(filtered_stack, full_stack[i])
 
         np.save(out_dir + "/filtered.npy", full_stack)
-        np.save(out_dir + "/best_hits.npy", filtered_stack)
+        if n_coarse_chans == 308:
+            np.save(out_dir + "/best_hits.npy", filtered_stack)
 
     g_end = time()
     print("Finished Energy Detection on %s in %.4f seconds" % (os.path.basename(input_file), g_end - g_start))
