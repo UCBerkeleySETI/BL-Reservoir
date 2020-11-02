@@ -168,7 +168,13 @@ if __name__ == "__main__":
     filtered_stack = np.array([])
 
     if stack_list:
-        full_stack = np.concatenate(stack_list)
+        # full_stack = np.concatenate(stack_list)
+        full_stack= np.zeros((1,16,1,128))
+        for i in range(len(stack_list)):
+            full_stack= np.append(full_stack,stack_list[i], axis=0)  
+        full_stack= full_stack[1:,:,:,:]
+        print(full_stack.shape)
+
         filtered_stack = full_stack[filtered_df.index.values]
         # for i in np.arange(0, len(full_stack)):
         #     if i in filtered_df.index.values:
