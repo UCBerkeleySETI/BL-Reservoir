@@ -1,5 +1,6 @@
 standard = (
     "energy_detection",
+    "dummy"
 )
 
 special = {

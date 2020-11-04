@@ -55,7 +55,7 @@ last_update_time = int(time.time())
 message = dict()
 
 while True:
-    # poller polls for 2 miliseconds and processes the request if one is received
+    # poller polls for 2 milliseconds and processes the request if one is received
     sockets = dict(poller.poll(2))
     if request_recv_socket in sockets and sockets[request_recv_socket] == zmq.POLLIN:
         # request is received as a pickled dictionary object;
@@ -68,6 +68,8 @@ while True:
         except (pickle.UnpicklingError, KeyError) as e:
             logging.info(f"Exception of type {type(e).__name__} occurred with request: {serialized}")
             continue
+
+        debug_mode = request["alg_package"] == "dummy"
 
         # set up response
         message["done"] = False
@@ -101,14 +103,17 @@ while True:
 
         # download the file and record the start time
         start = time.time()
-        filename = wget.download(file_url)
-        obs_name = os.path.splitext(filename)[0]
+        if not debug_mode:
+            filename = wget.download(file_url)
+            obs_name = os.path.splitext(filename)[0]
+        else:
+            filename = "debug"
+            obs_name = "debug"
 
         logging.info(f"Downloaded file {filename}")
         message["message"] = f"Downloaded file {filename}"
         broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
 
-        #
         alg_workdir = alg_working_directories.get(request["alg_package"], None)
         if "command" not in request:
             # we use subprocess.call to call the requested algorithm, the cwd keyword argument lets us select the working directory
@@ -123,28 +128,30 @@ while True:
 
             # string manipulation to make the output directory look better
             # outputs will be moved to bl-scale/<obs_name>/energy_detection/energy_detection_fine for fine-res energy detection
-            if request["alg_name"].endswith(".py"):
-                alg_name = request["alg_name"].split(".")[0]
-            else:
-                alg_name = request["alg_name"]
-            dirs = (f'/buckets/bl-scale/{obs_name}',
-                    f'/buckets/bl-scale/{obs_name}/{request["alg_package"]}',
-                    f'/buckets/bl-scale/{obs_name}/{request["alg_package"]}/{alg_name}')
-            for dir in dirs:
-                try:
-                    os.mkdir(dir)
-                except FileExistsError:
-                    continue
+            if not debug_mode:
+                if request["alg_name"].endswith(".py"):
+                    alg_name = request["alg_name"].split(".")[0]
+                else:
+                    alg_name = request["alg_name"]
+                dirs = (f'/buckets/bl-scale/{obs_name}',
+                        f'/buckets/bl-scale/{obs_name}/{request["alg_package"]}',
+                        f'/buckets/bl-scale/{obs_name}/{request["alg_package"]}/{alg_name}')
+                for dir in dirs:
+                    try:
+                        os.mkdir(dir)
+                    except FileExistsError:
+                        continue
 
-            # move outputs from results buffer to the storage buckets
-            # the files have to be output to a local directory first to bypass issues with FUSE
-            # which errors when we try to write to a file multiple times in a short time
-            # using a local directory as a buffer lets us write via FUSE once per file
-            subprocess.call(f'mv /results_buffer/* /buckets/bl-scale/{obs_name}/{request["alg_package"]}/{alg_name}', shell=True)
+                # move outputs from results buffer to the storage buckets
+                # the files have to be output to a local directory first to bypass issues with FUSE
+                # which errors when we try to write to a file multiple times in a short time
+                # using a local directory as a buffer lets us write via FUSE once per file
+                subprocess.call(f'mv /results_buffer/* /buckets/bl-scale/{obs_name}/'
+                                f'{request["alg_package"]}/{alg_name}', shell=True)
         else:
             fail = subprocess.call(f'{request["command"]}')
 
-        # if run fails, detete downloaded data and wait for next request
+        # if run fails, delete downloaded data and wait for next request
         if fail:
             message["message"] = f"Algorithm Failed, removing {obs_name}"
             broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
@@ -158,14 +165,17 @@ while True:
             continue
 
         # delete input file and record finish time
-        os.remove(filename)
+        if not debug_mode:
+            os.remove(filename)
         end = time.time()
 
         # send finished message
         logging.info(f'{request["alg_package"]}/{request["alg_name"]} finished on {obs_name}')
-        message["target"] = obs_name
-        message["message"] = (f'{request["alg_package"]}/{request["alg_name"]} finished in {end-start} seconds.'
-                              f'Results uploaded to gs://bl-scale/{obs_name}/{request["alg_package"]}/{request["alg_name"]}')
+        if not debug_mode:
+            message["target"] = obs_name
+            message["message"] = (f'{request["alg_package"]}/{request["alg_name"]} finished in {end-start} seconds.'
+                                  f'Results uploaded to gs://bl-scale/{obs_name}/'
+                                  f'{request["alg_package"]}/{request["alg_name"]}')
         message["processing_time"] = end-start
         message["object_uri"] = f'gs://bl-scale/{obs_name}/{request["alg_package"]}/{alg_name}'
         broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
