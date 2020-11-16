@@ -15,6 +15,8 @@ logging.info("Running")
 # grab pod metadata
 pod_id = os.environ.get("POD_ID")
 pod_ip = os.environ.get("POD_IP")
+
+# grab scheduler metadata
 scheduler_ip = os.environ.get("SCHEDULER_IP", "")
 
 # set up networking, request_recv_socket pulls in requests,
@@ -53,6 +55,11 @@ status["IDLE"] = True
 last_update_time = int(time.time())
 
 message = dict()
+
+error = dict()
+error["pod_id"] = pod_id
+error["pod_ip"] = pod_ip
+error["FAIL"] = False
 
 while True:
     # poller polls for 2 milliseconds and processes the request if one is received
@@ -151,7 +158,7 @@ while True:
         else:
             fail = subprocess.call(f'{request["command"]}')
 
-        # if run fails, delete downloaded data and wait for next request
+        # if run fails, delete downloaded data and send retry signal
         if fail:
             message["message"] = f"Algorithm Failed, removing {obs_name}"
             broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
@@ -159,7 +166,10 @@ while True:
             logging.info(f"Algorithm Failed, removed {obs_name} from disk")
 
             if scheduler_ip:
-                logging.info("Updating scheduler with status")
+                logging.info("Updating scheduler with error status")
+                error["FAIL"] = True
+                broadcast_socket.send_multipart([b"ERROR", pickle.dumps(error)])
+                logging.info("Updating scheduler with pod status")
                 status["IDLE"] = True
                 broadcast_socket.send_multipart([b"STATUS", pickle.dumps(status)])
             continue
