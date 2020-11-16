@@ -1,6 +1,6 @@
 # getting base image ubuntu
 FROM ubuntu
 
-RUN apt-get update && apt-get install git -y && apt-get install vim -y && apt-get install wget && git clone --single-branch --branch peter-dev https://github.com/UCBerkeleySETI/BL-Reservoir.git && apt install python3-pip -y && cd BL-Reservoir  && cd energy_detection && pip3 install -r requirements.txt 
+RUN apt-get update && apt-get install git -y && apt-get install vim -y && apt-get install wget && git clone --single-branch --branch peter-dev https://github.com/UCBerkeleySETI/BL-Reservoir.git && apt install python3-pip -y && cd BL-Reservoir  && cd temp_meerKAT_analysis && pip3 install -r requirements.txt 
 
 CMD ["echo", "Peter's Development Container"]
