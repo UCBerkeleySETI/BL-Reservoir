@@ -1,6 +1,5 @@
 standard = (
-    "energy_detection",
-    "dummy"
+    "energy_detection"
 )
 
 special = {
@@ -12,9 +11,14 @@ special = {
     }
 }
 
+test = {
+    "dummy"
+}
+
 alg_working_directories = {
     "energy_detection": "/code/bl_reservoir/energy_detection",
-    "turboSETI": "/code/bl_reservoir/turboSETI/turboSETI_env/lib/python3.6/site-packages/turbo_seti"
+    "turboSETI": "/code/bl_reservoir/turboSETI/turboSETI_env/lib/python3.6/site-packages/turbo_seti",
+    "dummy": "/code/bl_reservoir/dummy"
 }
 
 
@@ -30,5 +34,9 @@ def get_algo_command_template(package_name, alg_name):
         return lambda input_file, output_file: \
             (f'/code/bl_reservoir/{package_name}/{package_name}_env/bin/python3'
              f' {alg_name} {input_file} {output_file}')
+    elif package_name in test:
+        return lambda input_file, output_file: \
+            (f'/code/bl_reservoir/{package_name}/{package_name}_env/bin/python3'
+             f' {alg_name}')
     else:
         return special[package_name][alg_name]

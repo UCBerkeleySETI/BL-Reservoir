@@ -78,6 +78,11 @@ while True:
 
         debug_mode = request["alg_package"] == "dummy"
 
+        if request["alg_name"].endswith(".py"):
+            alg_name = request["alg_name"].split(".")[0]
+        else:
+            alg_name = request["alg_name"]
+
         # set up response
         message["done"] = False
         message["algo_type"] = get_algo_type(request["alg_package"])
@@ -133,13 +138,9 @@ while True:
                 get_algo_command_template(request["alg_package"], request["alg_name"])
                                          (f'/code/{filename}', '/results_buffer').split(), cwd=alg_workdir)
 
-            # string manipulation to make the output directory look better
-            # outputs will be moved to bl-scale/<obs_name>/energy_detection/energy_detection_fine for fine-res energy detection
             if not debug_mode:
-                if request["alg_name"].endswith(".py"):
-                    alg_name = request["alg_name"].split(".")[0]
-                else:
-                    alg_name = request["alg_name"]
+                # string manipulation to make the output directory look better
+                # outputs will be moved to bl-scale/<obs_name>/energy_detection/energy_detection_fine for fine-res energy detection
                 dirs = (f'/buckets/bl-scale/{obs_name}',
                         f'/buckets/bl-scale/{obs_name}/{request["alg_package"]}',
                         f'/buckets/bl-scale/{obs_name}/{request["alg_package"]}/{alg_name}')
@@ -160,18 +161,19 @@ while True:
 
         # if run fails, delete downloaded data and send retry signal
         if fail:
-            message["message"] = f"Algorithm Failed, removing {obs_name}"
-            broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
-            os.remove(filename)
-            logging.info(f"Algorithm Failed, removed {obs_name} from disk")
+            if not debug_mode:
+                message["message"] = f"Algorithm Failed, removing {obs_name}"
+                broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
+                os.remove(filename)
+                logging.info(f"Algorithm Failed, removed {obs_name} from disk")
 
             if scheduler_ip:
-                logging.info("Updating scheduler with error status")
-                error["FAIL"] = True
-                broadcast_socket.send_multipart([b"ERROR", pickle.dumps(error)])
                 logging.info("Updating scheduler with pod status")
                 status["IDLE"] = True
                 broadcast_socket.send_multipart([b"STATUS", pickle.dumps(status)])
+                logging.info("Updating scheduler with error status")
+                error["FAIL"] = True
+                broadcast_socket.send_multipart([b"ERROR", pickle.dumps(error)])
             continue
 
         # delete input file and record finish time
