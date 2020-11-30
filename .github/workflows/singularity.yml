@@ -26,6 +26,9 @@ jobs:
       - uses: actions/checkout@v2
 
       # Runs a single command using the runners shell
+      - name: checkout
+        run: ls
+
       - name: cd into dir
         run: cd BL-Reservoir/temp_meerKAT_analysis
         
