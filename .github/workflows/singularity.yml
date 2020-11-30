@@ -29,14 +29,9 @@ jobs:
       - name: checkout
         run: ls
 
-      - name: cd into dir
-        run: cd temp_meerKAT_analysis
+      - name: cd into dir and build
+        run: cd temp_meerKAT_analysis & ls & sudo docker build -t peterma-dev_remote .
 
-      - name: checkout
-        run: ls
-        
-      - name: build container
-        run: sudo docker build -t peterma-dev_remote .
         
       - name: save image
         run: sudo docker save -o peterma-dev_remote.tar peterma-dev_remote
