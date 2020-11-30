@@ -30,7 +30,7 @@ jobs:
         run: ls
 
       - name: cd into dir and build
-        run: cd temp_meerKAT_analysis & ls & sudo docker build -t peterma-dev_remote .
+        run: cd temp_meerKAT_analysis & ls & sudo docker build -t peterma-dev_remote /temp_meerKAT_analysis/
 
         
       - name: save image
