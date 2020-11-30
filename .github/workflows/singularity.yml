@@ -30,7 +30,7 @@ jobs:
         run: ls
 
       - name: cd into dir
-        run: cd BL-Reservoir/temp_meerKAT_analysis
+        run: cd temp_meerKAT_analysis
         
       - name: build container
         run: sudo docker build -t peterma-dev1 .
