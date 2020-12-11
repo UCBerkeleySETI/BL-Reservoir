@@ -41,7 +41,7 @@ if __name__ == "__main__":
     
     print("OUT DIRECTORY ------------------------------------------------------------------------------")
     print(out_dir)
-    i_vals = np.arange(524288 )
+    i_vals = np.arange(524288)
     freqs = 1.038e-03  * i_vals + 543.93359375
     frame_list = []
     stack_list = []

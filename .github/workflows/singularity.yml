@@ -23,14 +23,19 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-      - name: Setup - gcloud / gsutil
-        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
-        with:
-          service_account_key: ${{ secrets.GCP_JSON_KEY }}
-          project_id: breakthrough-listen-sandbox
-          export_default_credentials: true
+      # - uses: actions/checkout@v2
+      # - name: Setup - gcloud / gsutil
+      #   uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      #   with:
+      #     service_account_key: ${{ secrets.GCP_JSON_KEY }}
+      #     project_id: breakthrough-listen-sandbox
+      #     export_default_credentials: true
 
+      - uses: actions/checkout@v1
+      - uses: actions-hub/gcloud@master
+        env:
+          PROJECT_ID:  breakthrough-listen-sandbox
+          APPLICATION_CREDENTIALS:  ${{ secrets.GCP_JSON_KEY }}
       # Runs a single command using the runners shell
       - name: checkout
         run: ls
