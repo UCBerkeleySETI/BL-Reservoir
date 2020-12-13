@@ -23,7 +23,7 @@ coarse_channel_width = 128
 threshold = 1e-80
 stat_threshold = 2048
 parallel_coarse_chans = 32  # number of coarse channels operated on in parallel
-num_blocks = 360038 // parallel_coarse_chans
+num_blocks = 360448 // parallel_coarse_chans
 block_width = coarse_channel_width * parallel_coarse_chans
 save_png = False
 save_npy = True
@@ -41,7 +41,8 @@ if __name__ == "__main__":
     
     print("OUT DIRECTORY ------------------------------------------------------------------------------")
     print(out_dir)
-    i_vals = np.arange(46084864 )
+    i_vals = np.arange(46137344) 
+    # freqs = -3.337860107421875e-06  * i_vals + 1515.5
     freqs = 1.038e-03  * i_vals + 543.93359375
     frame_list = []
     stack_list = []
@@ -98,8 +99,8 @@ if __name__ == "__main__":
         def threshold_hits(channel_ind):
             res = list()
             channel_data = cleaned_block_data[:, coarse_channel_width*(channel_ind):coarse_channel_width*(channel_ind+1)]
-            for i in range(0, coarse_channel_width, 128):
-                test_window = channel_data[:, i:i+128]
+            for i in range(0, coarse_channel_width, coarse_channel_width):
+                test_window = channel_data[:, i:i+coarse_channel_width]
                 s, p = norm_test(test_window)
                 if s > stat_threshold:
                     res.append([coarse_channel_width*(channel_ind) + i, s, p])
@@ -126,7 +127,7 @@ if __name__ == "__main__":
 
         def aggregate_npy(channel_ind):
             inds = map(lambda x: x[0], chan_hits[channel_ind])
-            return np.array([cleaned_block_data[:, ind:ind+128] for ind in inds])
+            return np.array([cleaned_block_data[:, ind:ind+coarse_channel_width] for ind in inds])
 
         start = time()
         with Pool(min(parallel_coarse_chans, os.cpu_count())) as p:
