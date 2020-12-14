@@ -3,7 +3,7 @@ import sys
 
 input_file = str(sys.argv[1])
 print(input_file)
-for i in range(1, 31):
+for i in range(1, 11):
     print(' /home/pma/peterma-remote/BL-Reservoir/temp_meerKAT_analysis/data/' +'/blc0'+str(i))
     os.system('python3 energy_detection_fine_PKS.py '+input_file + ' /home/pma/peterma-remote/BL-Reservoir/temp_meerKAT_analysis/data/'+'/blc0'+str(i)+"/")
     if i<9:
