@@ -24,7 +24,7 @@ def difference(list_1,list_2):
 
 original_list = None
 while True:
-    new_list = open_csv('file_listener')
+    new_list = open_csv('file_listener.csv')
     if new_list != original_list:
         diff = difference(original_list,new_list)
         print("Update Detected: Executing Run "+str(diff[0]))
@@ -33,10 +33,10 @@ while True:
             os.system("bulk_execute_1-11.py "+file_path+" "+str(diff[0]))
         elif input_line ==2:
             file_path = '/mnt_blpd11/datax2/collate_mb/PKS_0371_2018-10-19T02:00/*/'+str(diff[0])
-            os.system("bulk_execute_1-11.py "+file_path+" "+str(diff[0]))
+            os.system("bulk_execute_12-22.py "+file_path+" "+str(diff[0]))
         elif input_line ==3:
             file_path = '/mnt_blpd11/datax2/collate_mb/PKS_0371_2018-10-19T02:00/*/'+str(diff[0])
-            os.system("bulk_execute_1-11.py "+file_path+" "+str(diff[0]))
+            os.system("bulk_execute_23-32.py "+file_path+" "+str(diff[0]))
         else:
             print("wrong compute node")
         original_list = new_list     
