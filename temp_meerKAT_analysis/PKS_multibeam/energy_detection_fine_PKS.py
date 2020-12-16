@@ -21,7 +21,7 @@ import os
 # Hyperparameters
 coarse_channel_width = 128
 threshold = 1e-80
-stat_threshold = 2048
+stat_threshold = 100
 parallel_coarse_chans = 32  # number of coarse channels operated on in parallel
 num_blocks = 360448 // parallel_coarse_chans
 block_width = coarse_channel_width * parallel_coarse_chans
