@@ -15,6 +15,8 @@ def list_directory(mypath):
             continue
         else:
             i = 'ignore'
+    return onlyfiles
+
 def newest(list_1,list_2):
     return list_2[len(list_1)]
 
@@ -22,15 +24,15 @@ original_list = list_directory(directory_listen)
 while True:
     new_list = list_directory(directory_listen)
     if len(new_list) > len(original_list) and newest(original_list,new_list)[0] != 'ignore':
-        diff = newest(original_list,new_list)[0]
+        diff = newest(original_list,new_list)
         print("Update Detected: Executing Run "+str(diff))
         try:
-            os.mkdir(str(diff))
+            os.mkdir(str(diff)+'_'+node_number)
         except:
             print("Couldn't make directory "+str(diff))
-        print("python3 energy_detection_fine_4k.py "+ str(directory_listen)+ "/"+str(diff) +" data/"+str(diff)+'/'+node_number+ " "+ str(diff))
-        os.system("python3 energy_detection_fine_4k.py "+ str(directory_listen)+ "/"+str(diff) +" data/"+str(diff)+'/'+node_number+ " "+ str(diff))
+        print("python3 energy_detection_fine_4k.py "+ str(directory_listen)+ "/"+str(diff) +" "+str(diff)+'/'+node_number+ " "+ str(diff))
+        os.system("python3 energy_detection_fine_4k.py "+ str(directory_listen)+ "/"+str(diff) +" "+str(diff)+'/'+node_number+ " "+ str(diff))
     else:
         print("No Update----------------")
         time.sleep(3)
-
+    original_list = new_list
