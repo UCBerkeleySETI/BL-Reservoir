@@ -21,17 +21,22 @@ while True:
     if len(new_list) > len(original_list):
         diff = difference(original_list,new_list)[0]
         print("Update Detected: Executing Run "+str(diff))
-
+        try:
+            os.mkdir(str(diff))
+        except:
+            print("Couldn't make directory "+str(diff))
         if int(input_line) ==1:
             print("computing node: "+str(input_line))
             file_path = '/mnt_blpd11/datax2/collate_mb/PKS_0371_2018-10-19T02:00/blc01/'+str(diff)
             print("python3 bulk_execute_1-11.py "+file_path+" "+str(diff))
             os.system("python3 bulk_execute_1-11.py "+file_path+" "+str(diff))
+
         elif int(input_line) ==2:
             print("computing node: "+str(input_line))
             file_path = '/mnt_blpd11/datax2/collate_mb/PKS_0371_2018-10-19T02:00/blc12/'+str(diff)
             print("python3 bulk_execute_12-22.py "+file_path+" "+str(diff))
             os.system("python3 bulk_execute_12-22.py "+file_path+" "+str(diff))
+
         elif int(input_line) ==3:
             print("computing node: "+str(input_line))
             file_path = '/mnt_blpd11/datax2/collate_mb/PKS_0371_2018-10-19T02:00/blc23/'+str(diff)

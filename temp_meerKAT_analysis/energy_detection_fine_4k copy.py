@@ -9,7 +9,7 @@ import hdf5plugin
 from time import time
 from multiprocessing import Pool, current_process
 import pickle
-from blimpy import Waterfall
+
 from utils import read_header, norm_test, remove_channel_bandpass
 import sys
 import os
@@ -21,9 +21,9 @@ import os
 # Hyperparameters
 coarse_channel_width = 128
 threshold = 1e-80
-stat_threshold = 100
+stat_threshold = 2048
 parallel_coarse_chans = 32  # number of coarse channels operated on in parallel
-num_blocks = 360448 // parallel_coarse_chans
+num_blocks = 4096 // parallel_coarse_chans
 block_width = coarse_channel_width * parallel_coarse_chans
 save_png = False
 save_npy = True
@@ -31,6 +31,7 @@ save_npy = True
 if __name__ == "__main__":
     g_start = time()
     input_file = sys.argv[1]
+
     if len(sys.argv) == 2:
         out_dir = input_file.split(".")[0]
     else:
@@ -41,9 +42,8 @@ if __name__ == "__main__":
     
     print("OUT DIRECTORY ------------------------------------------------------------------------------")
     print(out_dir)
-    i_vals = np.arange(46137344) 
-    freqs = -3.337860107421875e-06  * i_vals + 1515.5
-    # freqs = -3.337860107421875-06  * i_vals + 
+    i_vals = np.arange(524288)
+    freqs = 1.038e-03  * i_vals + 543.93359375
     frame_list = []
     stack_list = []
 

@@ -31,6 +31,7 @@ save_npy = True
 if __name__ == "__main__":
     g_start = time()
     input_file = sys.argv[1]
+    tag_name = sys.argv[3]
     if len(sys.argv) == 2:
         out_dir = input_file.split(".")[0]
     else:
@@ -162,7 +163,7 @@ if __name__ == "__main__":
 
     full_df = pd.concat(frame_list, ignore_index=True)
     full_df.set_index("index")
-    full_df.to_pickle(out_dir + "/info_df.pkl")
+    full_df.to_pickle(out_dir + "/info_df_"+str(tag_name)+".pkl")
 
     filtered_df = filter_images(full_df.reset_index(), 4)
     filtered_stack = np.array([])
