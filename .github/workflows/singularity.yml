@@ -18,7 +18,7 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -47,7 +47,7 @@ jobs:
         run: curl -sL https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
       - name: GET UPDATE
         run: sudo apt update
-        
+
       - name: NVIDIA-DOCKER 
         run: sudo apt-get install -y nvidia-docker2
       - name: RESTART
