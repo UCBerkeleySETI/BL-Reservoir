@@ -15,7 +15,6 @@ scikit-image
 opencv-python
 numpy==1.16.4
 blimpy
-pylab
 sklearn
 Keras
 Keras-Applications
