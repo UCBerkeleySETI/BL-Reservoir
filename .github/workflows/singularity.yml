@@ -46,10 +46,13 @@ jobs:
       - name: SETUP3
         run: curl -sL https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
       - name: GET UPDATE
-        run: sudo apt update
+        run: sudo apt-get update
 
       - name: NVIDIA-DOCKER 
-        run: sudo apt install nvidia-docker2 -y
+        run: sudo apt-get install nvidia-docker2 -y
+      - name: KILL
+        run: sudo pkill -SIGHUP dockerd
+        
       - name: RESTART
         run: sudo systemctl restart docker
 
