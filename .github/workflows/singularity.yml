@@ -45,7 +45,9 @@ jobs:
         run: distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
       - name: SETUP3
         run: curl -sL https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
-      
+      - name: GET UPDATE
+        run: sudo apt update
+        
       - name: NVIDIA-DOCKER 
         run: sudo apt-get install -y nvidia-docker2
       - name: RESTART
