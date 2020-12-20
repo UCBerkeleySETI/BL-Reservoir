@@ -49,7 +49,7 @@ jobs:
         run: sudo apt-get update
 
       - name: NVIDIA-DOCKER 
-        run: sudo apt-get install nvidia-docker2 -y
+        run: sudo apt-get install -y nvidia-docker2
       - name: KILL
         run: sudo pkill -SIGHUP dockerd
         
