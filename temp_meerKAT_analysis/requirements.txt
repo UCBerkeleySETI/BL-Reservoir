@@ -20,3 +20,4 @@ Keras
 Keras-Applications
 Keras-Preprocessing
 keras-vis
+jupyter

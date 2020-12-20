@@ -1,7 +1,7 @@
 import tensorflow as tf
 import keras
 from keras.models import Sequential 
-from keras.layers import Dense, Dropout, LSTM, CuDNNLSTM, ConvLSTM2D
+
 from keras.layers.core import Activation, Flatten
 import matplotlib.pyplot as plt
 from keras.optimizers import SGD,RMSprop,adam
@@ -18,7 +18,7 @@ from keras import losses
 from keras.layers.advanced_activations import LeakyReLU 
 from keras.activations import sigmoid
 from scipy.io import wavfile
-from keras.layers import Input, LSTM, MaxPooling1D, Conv1D
+
 from keras.models import Model
 from keras import backend as K
 from keras.layers.convolutional import Convolution1D
@@ -43,23 +43,34 @@ from scipy import stats, interpolate
 from blimpy import Waterfall
 from bisect import bisect_left
 from tqdm import tqdm
-import dask.array as da
 from copy import deepcopy
+
+
+
+print("""
+######################################################################################
+
+START TRAINING
+MODEL: AUTOENCODER 
+
+Author: Peter Ma
+
+######################################################################################
+""")
+
+
 
 
 obs1 = Waterfall('/content/GBT_58452_70595_HIP117059_fine.h5', f_start=1100, 
                 f_stop=1200, max_load=100).data
 print(obs1.shape)
-
 data_1 = np.zeros((139810,16,256))
-
 for i in range(data_1.shape[0]):
   if i%10000==0:
     print(i)
   data_1[i,:,:]=obs1[:,0,i*256:(i+1)*256]
 
 data_1 = data_1[..., np.newaxis]
-
 data_1 =data_1/data_1.max()
 print(data_1.shape)
 
