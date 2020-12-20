@@ -1,5 +1,6 @@
 # getting base image ubuntu
-FROM ubuntu
+# FROM ubuntu
+FROM nvidia/cuda:11.1-devel-ubuntu16.04
 
 RUN apt-get update && apt-get install git -y && apt-get install vim -y && apt-get install wget 
 RUN git clone --single-branch --branch peter-dev https://github.com/UCBerkeleySETI/BL-Reservoir.git 
