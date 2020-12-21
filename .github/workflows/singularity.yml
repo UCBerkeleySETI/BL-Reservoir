@@ -18,7 +18,7 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-18.04
 
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -88,12 +88,16 @@ jobs:
         
       - name: RESTART
         run: sudo systemctl restart docker
-      - name: UPGRADE PYTHON 
-        run: |
-             python3 -V
-             sudo add-apt-repository ppa:deadsnakes/ppa
-             sudo apt-get update
-             sudo apt-get install python3.8
+      # - name: UPGRADE PYTHON 
+      #   run: |
+      #        python3 -V
+      #        sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev wget
+      #        cd /tmp
+      #        wget https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tar.xz
+
+
+
+      #        python3 -V
 
       - name: cd into dir and build
         run: cd temp_meerKAT_analysis & ls & sudo docker build -t peterma-dev_remote temp_meerKAT_analysis/.
