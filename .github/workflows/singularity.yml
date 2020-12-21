@@ -19,7 +19,7 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-16.04
-    
+
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -40,12 +40,26 @@ jobs:
       # Runs a single command using the runners shell
       - name: checkout
         run: ls
-      # - name: DOCKER 
-      #   run: |
-      #         sudo apt-get install docker-ce=18.03.1~ce-0~ubuntu
-      #         sudo apt-get install nvidia-docker2=2.0.3+docker18.03.1-1 nvidia-container-runtime=2.0.0+docker18.03.1-1
-      #         sudo systemctl daemon-reload
-      #         sudo systemctl restart docker
+      - name: DOCKER 
+        run: |
+              sudo apt-get remove docker docker-engine docker.io
+
+              sudo apt-get install \
+                  apt-transport-https \
+                  ca-certificates \
+                  curl \
+                  software-properties-common
+                  
+              curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+              sudo apt-key fingerprint 0EBFCD88
+
+              sudo add-apt-repository \
+                "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+                $(lsb_release -cs) \
+                stable"
+
+              sudo apt-get update
+              sudo apt-get install docker-ce
 
       - name: NVIDIA-SETUP
         run: | 
