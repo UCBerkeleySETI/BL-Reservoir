@@ -30,8 +30,11 @@ jobs:
           PROJECT_ID:  breakthrough-listen-sandbox
           APPLICATION_CREDENTIALS:  ${{ secrets.GCP_JSON_KEY }}
       # Runs a single command using the runners shell
-      - name: checkout
+      - name: REMOVE AND FREE SPACE
         run: |
+             df -h
+             sudo rm -rf "/usr/local/share/boost"
+             sudo rm -rf "$AGENT_TOOLSDIRECTORY"
              df -h
       - name: DOCKER 
         run: |
