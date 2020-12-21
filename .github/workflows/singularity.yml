@@ -23,14 +23,6 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      # - uses: actions/checkout@v2
-      # - name: Setup - gcloud / gsutil
-      #   uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
-      #   with:
-      #     service_account_key: ${{ secrets.GCP_JSON_KEY }}
-      #     project_id: breakthrough-listen-sandbox
-      #     export_default_credentials: true
 
       - uses: actions/checkout@v1
       - uses: actions-hub/gcloud@master
@@ -39,7 +31,8 @@ jobs:
           APPLICATION_CREDENTIALS:  ${{ secrets.GCP_JSON_KEY }}
       # Runs a single command using the runners shell
       - name: checkout
-        run: ls
+        run: |
+             du -h
       - name: DOCKER 
         run: |
               sudo apt-get remove docker docker-engine docker.io
@@ -72,32 +65,8 @@ jobs:
 
             sudo apt-get install -y nvidia-docker2
             sudo pkill -SIGHUP dockerd
-      # - name: NVIDIA-SETUP
-      #   run: curl -sL https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
-      # - name: SETUP2
-      #   run: distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
-      # - name: SETUP3
-      #   run: curl -sL https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
-      # - name: GET UPDATE
-      #   run: sudo apt-get update
+            sudo systemctl restart docker
 
-      # - name: NVIDIA-DOCKER 
-      #   run: sudo apt-get install -y nvidia-docker2
-      # - name: KILL
-      #   run: sudo pkill -SIGHUP dockerd
-        
-      - name: RESTART
-        run: sudo systemctl restart docker
-      # - name: UPGRADE PYTHON 
-      #   run: |
-      #        python3 -V
-      #        sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev wget
-      #        cd /tmp
-      #        wget https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tar.xz
-
-
-
-      #        python3 -V
 
       - name: cd into dir and build
         run: cd temp_meerKAT_analysis & ls & sudo docker build -t peterma-dev_remote temp_meerKAT_analysis/.
