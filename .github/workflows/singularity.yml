@@ -39,6 +39,13 @@ jobs:
       # Runs a single command using the runners shell
       - name: checkout
         run: ls
+      - name: DOCKER 
+        run: |
+              sudo apt-get install docker-ce=18.03.1~ce-0~ubuntu
+              sudo apt-get install nvidia-docker2=2.0.3+docker18.03.1-1 nvidia-container-runtime=2.0.0+docker18.03.1-1
+              sudo systemctl daemon-reload
+              sudo systemctl restart docker
+              
       - name: NVIDIA-SETUP
         run: | 
             curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | \
