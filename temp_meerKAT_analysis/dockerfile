@@ -1,8 +1,10 @@
 # getting base image ubuntu
 # FROM ubuntu
-FROM nvidia/cuda:11.0-devel-ubuntu18.04
+# FROM nvidia/cuda:11.1-devel-ubuntu20.04
+FROM tensorflow/tensorflow:latest-gpu
 
 RUN apt-get update && apt-get install git -y && apt-get install vim -y && apt-get install wget 
+
 RUN git clone --single-branch --branch peter-dev https://github.com/UCBerkeleySETI/BL-Reservoir.git 
 RUN apt install python3-pip -y  
 RUN cd BL-Reservoir  && cd temp_meerKAT_analysis && pip3 install -r requirements.txt 
