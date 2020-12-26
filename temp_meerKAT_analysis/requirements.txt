@@ -20,3 +20,4 @@ Keras-Applications
 Keras-Preprocessing
 keras-vis
 jupyter
+git+https://github.com/kiyo-masui/bitshuffle

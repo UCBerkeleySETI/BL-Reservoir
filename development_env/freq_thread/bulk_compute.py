@@ -49,17 +49,14 @@ filename = str(sys.argv[1])
 print("___________________________________________________________")
 start= time.time()
 print("Reading Data")
-with h5py.File(filename, "r") as f:
-    # Get the data
-    data = f['data']
+data = Waterfall(filename, max_load = 20).data
 samples = data.shape[2]//256
 
 print("Reshape Data and Preprocess")
 data = np.reshape(data, (samples,data.shape[0],data.shape[1], 256))
 
 obs = Waterfall(filename, load_data=False)
-target_name = obs.header['rawdatafile']
-target_name = target_name.replace('.raw','')
+target_name = obs.header['source_name']
 
 print(data.shape)
 result = data [:,:,0,:]
@@ -78,7 +75,7 @@ features = new_model.predict(result)
 print(features.shape)
 
 print("Saving Features")
-np.save(str(target_name)+'_feature_'+'.npy', features)
+np.save(str(target_name)+ "_"+str(obs.header['tstart'])+'_feature_'+'.npy', features)
 print("DONE- time elapsed:")
 print(time.time()-start)
 
