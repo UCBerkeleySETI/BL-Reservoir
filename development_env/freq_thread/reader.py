@@ -4,6 +4,7 @@ from multiprocessing import Pool
 from functools import partial
 import multiprocessing
 import os
+import tqdm
 
 def f(x,directory,freq):
     start = 1926
@@ -17,6 +18,12 @@ def f(x,directory,freq):
     return []
 
 def multi_read(files, length=100, freq=1575):
+    data = []
     pool = multiprocessing.Pool(os.cpu_count())
-    data = pool.map(partial(f, directory=files, freq=freq), range(length))
+   
+    for _ in tqdm.tqdm(pool.map(partial(f, directory=files, freq=freq), range(length)), total=100):
+        data.append(_)
+    pool.close()
+    pool.join()
+    # data = pool.map(partial(f, directory=files, freq=freq), range(length))
     return data

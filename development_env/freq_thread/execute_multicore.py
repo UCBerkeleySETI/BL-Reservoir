@@ -41,11 +41,13 @@ from astropy.time import Time
 from keras.models import load_model
 import sys 
 from pandas import DataFrame
+import time 
 
 freq = int(str(sys.argv[1]))
 directory = str(sys.argv[2])
 
 files = []
+start = time.time()
 # directory ="../../../../../mnt_blpd7/datax/dl/"
 for filename in os.listdir(directory):
     if 'fine' in filename:
@@ -66,15 +68,17 @@ files.sort(key=checkMJD)
 
 print(len(files))
 
+if sys.argv[3] == None:
+    depth = len(files)
+else:
+    depth = int(str(sys.argv[3]))
 
-
-multicore_data = multi_read(files, length=len(files), freq=freq)
+multicore_data = multi_read(files, length=depth, freq=freq)
 
 stack_list =[]
 time_stamps= []
 file_directory = []
 for i in range(len(multicore_data)):
-    print(multicore_data[i])
     if multicore_data[i] != []:
         stack_list.append(multicore_data[i][1])
         time_stamps.append(multicore_data[i][0])
@@ -150,3 +154,11 @@ for i in range(1,len(hold)-1):
 
 print("False Signals:")
 print(len(negatives))
+print("END TIME")
+print(time.time()-start)
+print("START OF MJD")
+print(time_stamps[0])
+print("END OF MJD")
+print(time_stamps[len(time_stamps)-1])
+print("DELTA MJD")
+print(time_stamps[len(time_stamps)-1]-time_stamps[0])
