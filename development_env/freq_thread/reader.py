@@ -29,7 +29,27 @@ def multi_read(files, length=100, freq=1575):
     # data = pool.map(partial(f, directory=files, freq=freq), range(length))
     return data
 
-def single_file(start,stop, files):
-
+def single_file(start, files,width,):
+    with h5py.File(files, "r") as f:
+        data = f['data'][(start)*width:(start+1)*width]
+    return data
 
 def multi_read_single_file(files):
+    print("Number of CPU Cores:")
+    pool = multiprocessing.Pool(os.cpu_count())
+    data = []
+    print("Data Header Info")
+    obs = Waterfall(files, load_data=False)
+    shape = obs.selection_shape
+    print(shape)
+    freq_bins = shape[2]
+    width = freq_bins//256
+    length = 256
+    
+    for _ in tqdm.tqdm(pool.map(partial(single_file, files=files, width=width), range(length-1)), total=100):
+        data.append(_)
+    pool.close()
+    pool.join()
+
+    return data
+    

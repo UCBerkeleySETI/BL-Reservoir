@@ -37,6 +37,7 @@ from functools import partial
 from reader import f
 import multiprocessing
 from reader import multi_read
+from reader import multi_read_single_file
 from astropy.time import Time
 from keras.models import load_model
 import sys 
@@ -49,9 +50,9 @@ filename = str(sys.argv[1])
 print("___________________________________________________________")
 start= time.time()
 print("Reading Data")
-with h5py.File(filename, "r") as f:
-    # Get the data
-    data = list(f['data'])
+stack = multi_read_single_file(filename)
+data = np.concatenate(stack)
+
 samples = data.shape[2]//256
 
 print("Reshape Data and Preprocess")
