@@ -51,7 +51,7 @@ start= time.time()
 print("Reading Data")
 with h5py.File(filename, "r") as f:
     # Get the data
-    data = f['data']
+    data = list(f['data'])
 samples = data.shape[2]//256
 
 print("Reshape Data and Preprocess")

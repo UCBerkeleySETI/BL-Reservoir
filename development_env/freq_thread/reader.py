@@ -5,6 +5,7 @@ from functools import partial
 import multiprocessing
 import os
 import tqdm
+import h5py
 
 def f(x,directory,freq):
     start = 1926
@@ -27,3 +28,8 @@ def multi_read(files, length=100, freq=1575):
     pool.join()
     # data = pool.map(partial(f, directory=files, freq=freq), range(length))
     return data
+
+def single_file(start,stop, files):
+
+
+def multi_read_single_file(files):
