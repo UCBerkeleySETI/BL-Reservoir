@@ -42,6 +42,7 @@ from keras.models import load_model
 import sys 
 from pandas import DataFrame
 import time 
+import pickle
 
 freq = int(str(sys.argv[1]))
 directory = str(sys.argv[2])
@@ -49,12 +50,12 @@ files = []
 start = time.time()
 print("___________________________________________________________________________________")
 print("""
-    ____                 _____ ________________
-   / __ \___  ___  ____ / ___// ____/_  __/  _/
-  / / / / _ \/ _ \/ __ \\__ \/ __/   / /  / /  
- / /_/ /  __/  __/ /_/ /__/ / /___  / / _/ /   
-/_____/\___/\___/ .___/____/_____/ /_/ /___/   
-               /_/                             
+    ____                     _____ ________________
+   / __ \___  ___  ____     / ___// ____/_  __/  _/
+  / / / / _ \/ _ \/ __ \    \__ \/ __/   / /  / /  
+ / /_/ /  __/  __/ /_/ /   ___/ / /___  / / _/ /   
+/_____/\___/\___/ .___/   /____/_____/ /_/ /___/   
+               /_/                                 
    _____                      __  
   / ___/___  ____ ___________/ /_ 
   \__ \/ _ \/ __ `/ ___/ ___/ __ \
@@ -140,9 +141,11 @@ def k_means_clustering_fit(inputdata, clusters):
 
 
 hold =[]
-clusters = 100
+clusters = 150
 print("Predicted classes are ....")
 hold, kmeans = k_means_clustering_fit(features, clusters)
+pickle.dump(kmeans, open("kmeans_model.pkl", "wb"))
+
 
 def detector(hold, i):
     if hold[i-1]!=hold[i] and hold[i+1]!=hold[i] :

@@ -42,55 +42,14 @@ from keras.models import load_model
 import sys 
 from pandas import DataFrame
 import time 
-import h5py
-import time 
+import pickle
 
-filename = str(sys.argv[1])
+freq = int(str(sys.argv[1]))
+directory = str(sys.argv[2])
+files = []
+start = time.time()
 
-print("___________________________________________________________________________________")
-print("""
-    ____                 _____ ________________
-   / __ \___  ___  ____ / ___// ____/_  __/  _/
-  / / / / _ \/ _ \/ __ \\__ \/ __/   / /  / /  
- / /_/ /  __/  __/ /_/ /__/ / /___  / / _/ /   
-/_____/\___/\___/ .___/____/_____/ /_/ /___/   
-               /_/                             
-""")
-print("----- Single Core IO Version -----")
-print("Peter Ma - 12/27/2020")
-print("""
-Feeding Radio spectrograms into Neural Network to compute the feautures for classification further down the pipeline.  
-""")
-print("___________________________________________________________________________________")
-start= time.time()
-print("Reading Data")
-obs = Waterfall(filename, load_data=False)
-target_name = obs.header['source_name']
-print("Target Name: "+str(target_name))
 
-data = Waterfall(filename, max_load = 20).data
-samples = data.shape[2]//256
 
-print("Reshape Data and Preprocess")
-data = np.reshape(data, (samples,data.shape[0],data.shape[1], 256))
-
-result = data [:,:,0,:]
-result= np.expand_dims(result, axis=3)
-print(result.shape)
-min_val = result.min()
-data_1 = result-min_val+1
-data_1 = np.log(data_1)
-max_val = data_1.max()
-data_1 = data_1/max_val
-result = data_1
-
-print("Feeding Neural Network")
-new_model = load_model('test_model.h5')
-features = new_model.predict(result)
-print(features.shape)
-
-print("Saving Features")
-np.save(str(target_name)+ "_"+str(obs.header['tstart'])+'_feature_'+'.npy', features)
-print("DONE- time elapsed [sec]:")
+print("END TIME")
 print(time.time()-start)
-

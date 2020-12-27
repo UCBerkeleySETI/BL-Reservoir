@@ -47,14 +47,16 @@ import h5py
 import time 
 
 filename = str(sys.argv[1])
+if not os.path.isdir('/data'):
+    os.mkdir('/data')
 print("___________________________________________________________________________________")
 print("""
-    ____                 _____ ________________
-   / __ \___  ___  ____ / ___// ____/_  __/  _/
-  / / / / _ \/ _ \/ __ \\__ \/ __/   / /  / /  
- / /_/ /  __/  __/ /_/ /__/ / /___  / / _/ /   
-/_____/\___/\___/ .___/____/_____/ /_/ /___/   
-               /_/                             
+    ____                     _____ ________________
+   / __ \___  ___  ____     / ___// ____/_  __/  _/
+  / / / / _ \/ _ \/ __ \    \__ \/ __/   / /  / /  
+ / /_/ /  __/  __/ /_/ /   ___/ / /___  / / _/ /   
+/_____/\___/\___/ .___/   /____/_____/ /_/ /___/   
+               /_/                                 
 """)
 print("----- Multi-Core IO Version -----")
 print("Peter Ma - 12/27/2020")
@@ -93,7 +95,7 @@ features = new_model.predict(result)
 print(features.shape)
 
 print("Saving Features")
-np.save(str(target_name)+ "_"+str(obs.header['tstart'])+'_feature_'+'.npy', features)
+np.save('/data/'+str(target_name)+ "_"+str(obs.header['tstart'])+'_feature_'+'.npy', features)
 print("DONE- time elapsed:")
 print(time.time()-start)
 
