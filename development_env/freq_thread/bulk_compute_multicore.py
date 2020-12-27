@@ -47,24 +47,38 @@ import h5py
 import time 
 
 filename = str(sys.argv[1])
-print("___________________________________________________________")
+print("___________________________________________________________________________________")
+print("""
+    ____                 _____ ________________
+   / __ \___  ___  ____ / ___// ____/_  __/  _/
+  / / / / _ \/ _ \/ __ \\__ \/ __/   / /  / /  
+ / /_/ /  __/  __/ /_/ /__/ / /___  / / _/ /   
+/_____/\___/\___/ .___/____/_____/ /_/ /___/   
+               /_/                             
+""")
+print("----- Multi-Core IO Version -----")
+print("Peter Ma - 12/27/2020")
+print("""
+Feeding Radio spectrograms into Neural Network to compute the feautures for classification further down the pipeline.  
+""")
+print("___________________________________________________________________________________")
 start= time.time()
 print("Reading Data")
-stack = multi_read_single_file(filename)
-data = np.concatenate(stack)
+obs = Waterfall(filename, load_data=False)
+target_name = obs.header['source_name']
+print("Target Name: "+str(target_name))
 
-samples = data.shape[2]//256
+
+stack = multi_read_single_file(filename)
+data = np.concatenate(stack, axis=1)
+
+samples = data.shape[1]//256
 
 print("Reshape Data and Preprocess")
-data = np.reshape(data, (samples,data.shape[0],data.shape[1], 256))
-
-obs = Waterfall(filename, load_data=False)
-target_name = obs.header['rawdatafile']
-target_name = target_name.replace('.raw','')
+data = np.reshape(data, (samples, data.shape[0], 256))
 
 print(data.shape)
-result = data [:,:,0,:]
-result= np.expand_dims(result, axis=3)
+result= np.expand_dims(data, axis=3)
 print(result.shape)
 min_val = result.min()
 data_1 = result-min_val+1
@@ -79,7 +93,7 @@ features = new_model.predict(result)
 print(features.shape)
 
 print("Saving Features")
-np.save(str(target_name)+'_feature_'+'.npy', features)
+np.save(str(target_name)+ "_"+str(obs.header['tstart'])+'_feature_'+'.npy', features)
 print("DONE- time elapsed:")
 print(time.time()-start)
 
