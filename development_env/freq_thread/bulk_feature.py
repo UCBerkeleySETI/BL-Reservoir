@@ -47,7 +47,8 @@ import pickle
 
 
 directory = str(sys.argv[1])
-depth = int(str(sys.argv[2]))
+start = int(str(sys.argv[2]))
+end = int(str(sys.argv[3]))
 print("""
     ____                     _____ ________________
    / __ \___  ___  ____     / ___// ____/_  __/  _/
@@ -56,8 +57,8 @@ print("""
 /_____/\___/\___/ .___/   /____/_____/ /_/ /___/   
                /_/                                 
     ______           __                
-   / ____/__  ____ _/ /___  __________ 
-  / /_  / _ \/ __ `/ __/ / / / ___/ _ \
+   / ____/__  ____ _/ /___  ___________
+  / /_  / _ \/ __ `/ __/ / / / ___/ _  |
  / __/ /  __/ /_/ / /_/ /_/ / /  /  __/
 /_/    \___/\__,_/\__/\__,_/_/   \___/ 
                                        
@@ -99,19 +100,16 @@ for directory in files:
         flag= True
         obs = Waterfall(directory, f_start=1575-step, 
                     f_stop=1575, max_load=20, load_data=False)
-        if obs.selection_shape==(1,16,1,256):
+        if obs.selection_shape==(16,1,256):
             print('check')
             print(count)
             time_stamps.append(obs.header['tstart'])
             file_directory.append(directory)
-    count =count +1
-    if count ==depth:
-        break
 
 count =0
-for direc in file_directory:
-    print("Computing "+str(count)+"/"+str(len(file_directory)))
-    os.system('python3 feature.py '+str(direc))
+for i in range(start,end):
+    print("Computing "+str(count)+"/"+str(len(file_directory[start:end])))
+    os.system('python3 feature.py '+str(file_directory[i]))
     count+=1
 
 

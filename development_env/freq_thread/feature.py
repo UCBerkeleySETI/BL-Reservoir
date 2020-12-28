@@ -47,8 +47,7 @@ import time
 
 filename = str(sys.argv[1])
 
-if not os.path.isdir('/data'):
-    os.mkdir('/data')
+
 
 print("___________________________________________________________________________________")
 print("""
