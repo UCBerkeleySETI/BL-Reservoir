@@ -44,6 +44,7 @@ import time
 import pickle
 import tqdm
 from joblib import dump, load
+from finger_print import filter_candidates
 
 directory = str(sys.argv[1])
 files = []
@@ -92,12 +93,12 @@ def kmean_function(freq, data, model):
 
 hold =[]
 if 200 > len(files):
-    clusters = len(files)//1.5
+    clusters = int(len(files)//1.5)
 else:
     clusters = 200
 
 print("Predicted classes are ....")
-random_index = int(random.random()*data.shape[1])
+random_index = int(random()*data.shape[1])
 hold, kmeans = k_means_clustering_fit(data[:,random_index,:], clusters)
 
 est = time.time()
@@ -112,12 +113,19 @@ length = data.shape[1]
 finger_print_collapse = np.zeros((length,len(files)))
 for i in range(length):
     finger_print_collapse[i,:]= kmean_function(i, data,kmeans)
-# for _ in tqdm.tqdm( pool.map(partial(kmean_function, data=data, model= kmeans), range(length)), total=100):
-#         finger_print.append(_)
-# finger_print = pool.map(partial(kmean_function, data=data, model= kmeans), range(length))
+
+times_files = []
+for i in range(len(files)):
+    times_files.append(checkMJD(files[i]))
+
+
+df = filter_candidates(finger_print_collapse,files,times_files)
+
+
 
 print(finger_print_collapse.shape)
 np.save('fingerprint_'+str(checkMJD(files[0]))+"_"+str(checkMJD(files[len(files)-1]))+'.npy', data=finger_print_collapse)
+
 
 print("END TIME")
 print(time.time()-start)
