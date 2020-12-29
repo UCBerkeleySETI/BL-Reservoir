@@ -43,6 +43,7 @@ import sys
 from pandas import DataFrame
 import time 
 import pickle
+from joblib import dump, load
 
 freq = int(str(sys.argv[1]))
 directory = str(sys.argv[2])
@@ -144,7 +145,8 @@ hold =[]
 clusters = 150
 print("Predicted classes are ....")
 hold, kmeans = k_means_clustering_fit(features, clusters)
-pickle.dump(kmeans, open("kmeans_model.pkl", "wb"))
+dump(kmeans, 'kmeans_model.joblib') 
+
 
 
 def detector(hold, i):

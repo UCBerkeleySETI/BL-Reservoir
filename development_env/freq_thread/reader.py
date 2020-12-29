@@ -53,6 +53,7 @@ def multi_read_single_file(files):
     return data
     
 def read_numpy(index ,file):
+    print(" CPU CORE #"+str(index)+" Working .....")
     return numpy.load(file[index])
 
 def multi_read_numpy(length,files):
@@ -60,7 +61,7 @@ def multi_read_numpy(length,files):
     print(os.cpu_count())
     pool = multiprocessing.Pool(os.cpu_count())
     data = []
-    data = pool.map(partial(read_numpy, files=files), range(length))
+    data = pool.map(partial(read_numpy, file=files), range(length))
     pool.close()
     pool.join()
     return data

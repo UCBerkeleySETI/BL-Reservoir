@@ -42,10 +42,10 @@ import sys
 from pandas import DataFrame
 import time 
 import pickle
+import tqdm
+from joblib import dump, load
 
-
-freq = int(str(sys.argv[1]))
-directory = str(sys.argv[2])
+directory = str(sys.argv[1])
 files = []
 start = time.time()
 
@@ -56,7 +56,9 @@ for filename in os.listdir(directory):
 def checkMJD(elem):
     time = elem.split('_')
     print(time)
-    string_time = time[2] + '.'+time[3] 
+    string_time = time[2] 
+    if string_time == 'OFF':
+        string_time = time[3] 
     float_time = float(string_time)
     return float_time
 
@@ -65,23 +67,55 @@ print(len(files))
 
 file_length = len(files)
 stack_list = multi_read_numpy(file_length, files )
-data = np.zeros((file_length,stack_list[0].shapoe[0],stack_list[0].shapoe[1]))
+
+data = np.zeros((file_length,stack_list[0].shape[0],stack_list[0].shape[1]))
 for i in range(file_length):
     data[i,:,:] = stack_list[i]
 
 print(data.shape)
-kmeans = pickle.load(open("kmeans_model.pkl", "rb"))
+def k_means_clustering_fit(inputdata, clusters):
+    kmeans = KMeans(n_clusters=clusters, init='k-means++', max_iter=3000, n_init=100, random_state=2)
+    kmeans.fit(inputdata)
+    generated = np.zeros((clusters))
+    prediction =  kmeans.predict(inputdata)
+    for i in range(0,inputdata.shape[0]):
+        for k in range(0,clusters):
+            if prediction[i]==k:
+                generated[k]+=1
+    print(generated)
+    return prediction, kmeans
 
 def kmean_function(freq, data, model):
-    prediction =  kmeans.predict(data[:,freq,:])
+    print(freq)
+    prediction =  model.predict(data[:,freq,:])
     return prediction
 
-pool = multiprocessing.Pool(os.cpu_count())
+hold =[]
+if 200 > len(files):
+    clusters = len(files)//1.5
+else:
+    clusters = 200
+
+print("Predicted classes are ....")
+random_index = int(random.random()*data.shape[1])
+hold, kmeans = k_means_clustering_fit(data[:,random_index,:], clusters)
+
+est = time.time()
+pred = kmean_function(0,data,kmeans)
+print(len(pred))
+print(time.time()-est)
+
+
+
 finger_print = []
 length = data.shape[1]
-finger_print = pool.map(partial(kmean_function, data=data, model= kmeans), range(length))
+finger_print_collapse = np.zeros((length,len(files)))
+for i in range(length):
+    finger_print_collapse[i,:]= kmean_function(i, data,kmeans)
+# for _ in tqdm.tqdm( pool.map(partial(kmean_function, data=data, model= kmeans), range(length)), total=100):
+#         finger_print.append(_)
+# finger_print = pool.map(partial(kmean_function, data=data, model= kmeans), range(length))
 
-finger_print_collapse = np.concatenate(finger_print)
 print(finger_print_collapse.shape)
 np.save('fingerprint_'+str(checkMJD(files[0]))+"_"+str(checkMJD(files[len(files)-1]))+'.npy', data=finger_print_collapse)
 
