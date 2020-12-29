@@ -107,9 +107,9 @@ for directory in files:
             file_directory.append(directory)
 
 count =0
-for i in range(start,end):
+for i in range(end-start):
     print("Computing "+str(count)+"/"+str(len(file_directory[start:end])))
-    os.system('python3 feature.py '+str(file_directory[i]))
+    os.system('python3 feature.py '+str(file_directory[i+start]))
     count+=1
 
 
