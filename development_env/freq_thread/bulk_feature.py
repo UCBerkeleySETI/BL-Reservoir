@@ -47,7 +47,7 @@ import pickle
 
 
 directory = str(sys.argv[1])
-start = int(str(sys.argv[2]))
+begin = int(str(sys.argv[2]))
 end = int(str(sys.argv[3]))
 print("""
     ____                     _____ ________________
@@ -107,9 +107,9 @@ for directory in files:
             file_directory.append(directory)
 
 count =0
-for i in range(end-start):
-    print("Computing "+str(count)+"/"+str(len(file_directory[start:end])))
-    os.system('python3 feature.py '+str(file_directory[i+start]))
+for i in range(end-begin):
+    print("Computing "+str(count)+"/"+str(len(file_directory[begin:end])))
+    os.system('python3 feature.py '+str(file_directory[i+begin]))
     count+=1
 
 
