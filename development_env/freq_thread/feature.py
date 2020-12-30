@@ -92,7 +92,7 @@ features = new_model.predict(result)
 print(features.shape)
 
 print("Saving Features")
-np.save('/data/'+str(target_name)+ "_"+str(obs.header['tstart'])+'_feature_'+'.npy', features)
+np.save('~/freq_thread/'+str(target_name)+ "_"+str(obs.header['tstart'])+'_feature_'+'.npy', features)
 print("DONE- time elapsed [sec]:")
 print(time.time()-start)
 

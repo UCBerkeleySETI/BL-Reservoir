@@ -21,7 +21,7 @@ from joblib import dump, load
 def filter_candidates(finger_print, directory, time):
     candidates =[]
     for j in range(0,finger_print.shape[0]):
-        for i in range(1,finger_print.shape[1]):
+        for i in range(1,finger_print.shape[1]-1):
             if finger_print[j,i-1] != finger_print[j,i] and finger_print[j,i+1] != finger_print[j,i]:
                 candidates.append([j*256,-j*256*2.835503418452676e-06+ 1926.26953125, time[i], directory[i]] )
     df = DataFrame (candidates,columns=['Index','Freq','Time [MJD]', 'numpy directory'])
