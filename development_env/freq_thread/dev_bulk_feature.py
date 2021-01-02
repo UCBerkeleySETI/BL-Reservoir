@@ -107,6 +107,7 @@ for directory in files:
             file_directory.append(directory)
 
 count =0
+new_model = load_model('test_model.h5')
 for i in range(end-begin):
     filename = str(file_directory[i+begin])
     print("___________________________________________________________________________________")
@@ -147,12 +148,12 @@ for i in range(end-begin):
     result = data_1
 
     print("Feeding Neural Network")
-    new_model = load_model('test_model.h5')
+    
     features = new_model.predict(result)
     print(features.shape)
 
     print("Saving Features")
-    np.save('~/freq_thread/'+str(target_name)+ "_"+str(obs.header['tstart'])+'_feature_'+'.npy', features)
+    np.save(str(target_name)+ "_"+str(obs.header['tstart'])+'_feature_'+'.npy', features)
     print("DONE- time elapsed [sec]:")
     print(time.time()-start)
 

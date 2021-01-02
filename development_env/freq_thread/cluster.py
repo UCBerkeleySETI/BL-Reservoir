@@ -69,9 +69,10 @@ print(len(files))
 file_length = len(files)
 stack_list = multi_read_numpy(file_length, files )
 
-data = np.zeros((file_length,stack_list[0].shape[0],stack_list[0].shape[1]))
-for i in range(file_length):
-    data[i,:,:] = stack_list[i]
+data = np.asarray(stack_list)
+# data = np.zeros((file_length,stack_list[0].shape[0],stack_list[0].shape[1]))
+# for i in range(file_length):
+#     data[i,:,:] = stack_list[i]
 
 print(data.shape)
 def k_means_clustering_fit(inputdata, clusters):
