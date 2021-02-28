@@ -144,10 +144,34 @@ if __name__ == "__main__":
         del integrated
         del channels
         del cleaned_block_data
+        
+    #returns dataframe of 3*n filtered images
+    def filter_images(df, n):
+        #filter 1000 to 1400 freqs
+        freq_1000_1400 = df[(df["freqs"] >= 1000) & (df["freqs"] <= 1400)]
+        freq_1000_1400 = freq_1000_1400.sort_values("statistic", ascending=False).head(n)
+
+        #filter 1400 to 1700 freqs
+        freq_1400_1700 = df[(df["freqs"] > 1400) & (df["freqs"] <= 1700)]
+        freq_1400_1700 = freq_1400_1700.sort_values("statistic", ascending=False).head(n)
+
+        #filter 1700 plus freqs
+        freq_1700 = df[df["freqs"] > 1700]
+        freq_1700 = freq_1700.sort_values("statistic", ascending=False).head(n)
+
+        extr_all = pd.concat([freq_1000_1400, freq_1400_1700, freq_1700])
+        return extr_all
 
     full_df = pd.concat(frame_list, ignore_index=True)
     full_df.set_index("index")
     full_df.to_csv(out_dir + "/info_df.csv")
+    
+    
+    filtered_df = filter_images(full_df.reset_index(), 15)
+    filtered_stack = np.array([])
+    
     if save_npy:
         full_stack = np.concatenate(stack_list)
+        filtered_stack = full_stack[filtered_df.index.values]
         np.save(out_dir + "/filtered.npy", full_stack)
+        np.save(out_dir + "/best_hits.npy", filtered_stack)
