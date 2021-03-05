@@ -13,6 +13,7 @@ do
         $dir/${dir}_env/bin/pip3 install setuptools
         $dir/${dir}_env/bin/pip3 install scikit-build
         $dir/${dir}_env/bin/pip3 install Cython
+        $dir/${dir}_env/bin/pip3 install numpy
         $dir/${dir}_env/bin/pip3 install -r $dir/requirements.txt
         if [ -f $dir/requirements_git.txt ]; then
           # $dir/${dir}_env/bin/pip3 install numpy
