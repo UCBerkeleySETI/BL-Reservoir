@@ -1,35 +1,34 @@
 import numpy as np
 import pandas as pd
-from scipy import stats
-from matplotlib import pyplot as plt
-from bisect import bisect_left
 from tqdm import tqdm
 import h5py
 import hdf5plugin
 from time import time
-from multiprocessing import Pool, current_process
 import pickle
+from multiprocessing import Pool
 
-from utils import *
+from utils import read_header, norm_test, remove_channel_bandpass
 import sys
 import os
 
-# if "cupy" in sys.modules:
-#     import cupy as np
-#     print("Using cupy")
+coarse_channel_width = 1024
+slice_length = 256
 
-# Hyperparameters
-coarse_channel_width=1048576
-threshold = 1e-80
-BAT_threshold = np.load("three_channel_final_thresholds_real.npy") # read in Bayesian Adaptive Threshold for 3-coarse channels
-parallel_coarse_chans = 28 # number of coarse channels operated on in parallel
-num_blocks = 308 // parallel_coarse_chans
+p_threshold = 1e-25
+# stat_threshold = 2048
+
+parallel_coarse_chans = 28
+# number of coarse channels operated on in parallel 49 for 343
+
+num_blocks = int(308 / parallel_coarse_chans)  # 308
+
 block_width = coarse_channel_width * parallel_coarse_chans
+
 save_png = False
-save_npy = True
+save_npy = False
 
 if __name__ == "__main__":
-    g_start = time()
+
     input_file = sys.argv[1]
     if len(sys.argv) == 2:
         out_dir = input_file.split(".")[0]
@@ -48,24 +47,23 @@ if __name__ == "__main__":
         pickle.dump(header, f)
         print("Header saved to "+out_dir+"/header.pkl")
 
+# to save clean output, uncomment:
+
+#     cleaned_dir = out_dir+"/cleaned"
+#     if not os.path.isdir(cleaned_dir):
+#         os.mkdir(cleaned_dir)
+
+    hf = h5py.File(input_file, "r")
+
     frame_list = []
     stack_list = []
 
     for block_num in tqdm(range(num_blocks)):
         print(f"Processing coarse channels {block_num * parallel_coarse_chans}-{(block_num + 1) * parallel_coarse_chans}")
-        start = time()
-
-        def read_coarse_channel(channel_num):
-            hf = h5py.File(input_file, "r")
-            read_data =  hf["data"][:, 0, channel_num * 1024*1024 : (channel_num+1) * 1024*1024]
-            hf.close()
-            return read_data
-
-        with Pool(min(parallel_coarse_chans, os.cpu_count())) as p:
-            block_data = np.concatenate(p.map(read_coarse_channel,
-                range(block_num * parallel_coarse_chans, (block_num + 1) * parallel_coarse_chans)), axis=1)
-        end = time()
-        print(f"Data loaded in {end - start:.4f} seconds, processing")
+        block_data = hf["data"][:, 0,
+                                block_num*parallel_coarse_chans*coarse_channel_width:
+                                (block_num+1)*parallel_coarse_chans*coarse_channel_width]
+        print("Data loaded, processing")
 
         start = time()
         half_chan = coarse_channel_width/2
@@ -77,11 +75,10 @@ if __name__ == "__main__":
         integrated = np.mean(block_data, axis=0)
         channels = np.reshape(integrated, (-1, coarse_channel_width))
 
-
         def clean(channel_ind):
             # print("%s processing channel %d of %s" % (current_process().name, channel_ind, block_file))
-            cleaned_block =  remove_channel_bandpass(block_data[:, coarse_channel_width*(channel_ind):coarse_channel_width*(channel_ind+1)],
-                           channels[channel_ind], coarse_channel_width)
+            cleaned_block = remove_channel_bandpass(block_data[:, coarse_channel_width*(channel_ind):coarse_channel_width*(channel_ind+1)],
+                                                    channels[channel_ind], coarse_channel_width)
             return cleaned_block
 
         def clean_block_bandpass():
@@ -89,10 +86,9 @@ if __name__ == "__main__":
                 cleaned = p.map(clean, range(parallel_coarse_chans))
             return cleaned
 
-
         cleaned_block_data = clean_block_bandpass()
         cleaned_block_data = np.concatenate(cleaned_block_data, axis=1)
-        # np.save(out_dir+"/cleaned/" + block_file, normalized)
+#         np.save(out_dir+"/cleaned/" + str(block_num),  cleaned_block_data) #uncomment to save clean output
 
         end = time()
         print("Bandpass cleaned in %.4f seconds." % (end - start))
@@ -103,28 +99,24 @@ if __name__ == "__main__":
         def threshold_hits(channel_ind):
             res = list()
             channel_data = cleaned_block_data[:, coarse_channel_width*(channel_ind):coarse_channel_width*(channel_ind+1)]
-            for i in range(0, coarse_channel_width - 128, 128):
-                test_window = channel_data[:, i:i+256]
+            for i in range(0, coarse_channel_width - int((slice_length/2)), int((slice_length/2))):
+                test_window = channel_data[:, i:i+slice_length]
                 s, p = norm_test(test_window)
-                # get the coarse channel number (between 0-307)
-                coarse_num = block_num * parallel_coarse_chans + channel_ind
-                # check if statistic value is greater than the BAT threshold for that coarse num
-                # if yes, keep s-value in final dataframe
-                if s > BAT_threshold[coarse_num]:
-                    res.append([coarse_channel_width*(channel_ind) + i, s, p])
+                #if p < p_threshold:  # or s > stat_threshold:
+                res.append([coarse_channel_width*(channel_ind) + i, s, p])
             return res
 
         start = time()
         with Pool(min(parallel_coarse_chans, os.cpu_count())) as p:
             chan_hits = p.map(threshold_hits, range(parallel_coarse_chans))
         end = time()
-        print("Stamps filtered in %.4f seconds" %(end-start))
+        print("Stamps filtered in %.4f seconds" % (end-start))
 
         vals_frame = pd.DataFrame(sum(chan_hits, []), columns=["index", "statistic", "pvalue"])
+        vals_frame["block_num"] = block_num
         vals_frame["index"] += block_num*block_width
         vals_frame["freqs"] = vals_frame["index"].map(lambda x: freqs[x])
         frame_list.append(vals_frame)
-
 
         print("Saving results")
         # def save_stamps(channel_ind):
@@ -133,9 +125,10 @@ if __name__ == "__main__":
         #         i, s, p = res
         #         plt.imsave((filtered_dir+"%d/%d.png" % (block_num, block_num*block_width + i)), cleaned_block_data[:, i:i+256])
         #         # np.save((filtered_dir+"%d/%d.npy" % (block_num, block_num*block_width + i)), data[:, i:i+200])
+
         def aggregate_npy(channel_ind):
             inds = map(lambda x: x[0], chan_hits[channel_ind])
-            return np.array([cleaned_block_data[:, ind:ind+256] for ind in inds])
+            return np.array([cleaned_block_data[:, ind:ind+slice_length] for ind in inds])
 
         start = time()
         with Pool(min(parallel_coarse_chans, os.cpu_count())) as p:
@@ -147,13 +140,12 @@ if __name__ == "__main__":
                 if stack:
                     stack_list.append(np.concatenate(stack, axis=0))
         end = time()
-        print("Results aggregated in %.4f seconds" % (end - start))
+        print("Results saved in %.4f seconds" % (end - start))
         del integrated
         del channels
         del cleaned_block_data
-
-    # Intakes a pandas dataframe
-    # returns dataframe of 3*n filtered images
+        
+    #returns dataframe of 3*n filtered images
     def filter_images(df, n):
         #filter 1000 to 1400 freqs
         freq_1000_1400 = df[(df["freqs"] >= 1000) & (df["freqs"] <= 1400)]
@@ -172,19 +164,14 @@ if __name__ == "__main__":
 
     full_df = pd.concat(frame_list, ignore_index=True)
     full_df.set_index("index")
-    full_df.to_pickle(out_dir + "/all_info_df.pkl")
-
-    # filter out the full dataframe to include only those with unusual statistics
-    filtered_df = filter_images(full_df.reset_index(), 4)
+    full_df.to_csv(out_dir + "/info_df.csv")
+    
+    
+    filtered_df = filter_images(full_df.reset_index(), 15)
     filtered_stack = np.array([])
-
-    if stack_list:
+    
+    if save_npy:
         full_stack = np.concatenate(stack_list)
         filtered_stack = full_stack[filtered_df.index.values]
-        # all images saved in 3-dimensional npy array with shape (pixel width, pixel length, number of images)
         np.save(out_dir + "/filtered.npy", full_stack)
-        # only the 12 filtered images saved in 3-d npy array with shape (pixel width, pixel length, number of images)
         np.save(out_dir + "/best_hits.npy", filtered_stack)
-
-    g_end = time()
-    print("Finished Energy Detection on %s in %.4f seconds" % (os.path.basename(input_file), g_end - g_start))
