@@ -19,12 +19,18 @@ import os
 #     print("Using cupy")
 
 # Hyperparameters
-coarse_channel_width=1048576
+# coarse_channel_width=1048576
+# threshold = 1e-80
+# stat_threshold = 2048
+# parallel_coarse_chans = 28 # number of coarse channels operated on in parallel
+# num_blocks = 308 // parallel_coarse_chans
+# block_width = coarse_channel_width * parallel_coarse_chans
+# save_png = False
+# save_npy = False
+
+coarse_channel_width = 2 ** 20
 threshold = 1e-80
 stat_threshold = 2048
-parallel_coarse_chans = 28 # number of coarse channels operated on in parallel
-num_blocks = 308 // parallel_coarse_chans
-block_width = coarse_channel_width * parallel_coarse_chans
 save_png = False
 save_npy = False
 
@@ -47,6 +53,16 @@ if __name__ == "__main__":
     with open(out_dir+"/header.pkl", "wb") as f:
         pickle.dump(header, f)
         print("Header saved to "+out_dir+"/header.pkl")
+        
+    # calculate number of coarse channels
+    n_coarse_chans = int(n_chans // coarse_channel_width)
+    for i in range(32, 0, -1):
+        if n_coarse_chans % i == 0:
+            parallel_coarse_chans = i
+            print(f"Processing {parallel_coarse_chans} in parallel")
+            break
+    num_blocks = int(n_coarse_chans // parallel_coarse_chans)
+    block_width = coarse_channel_width * parallel_coarse_chans
 
     frame_list = []
     stack_list = []
@@ -169,18 +185,18 @@ if __name__ == "__main__":
     full_df.set_index("index")
     full_df.to_pickle(out_dir + "/all_info_df.pkl")
 
-    filtered_df = filter_images(full_df.reset_index(), 4)
-    filtered_stack = np.array([])
+#     filtered_df = filter_images(full_df.reset_index(), 4)
+#     filtered_stack = np.array([])
 
-    if stack_list:
-        full_stack = np.concatenate(stack_list)
-        filtered_stack = full_stack[filtered_df.index.values]
-        # for i in np.arange(0, len(full_stack)):
-        #     if i in filtered_df.index.values:
-        #         filtered_stack = np.append(filtered_stack, full_stack[i])
+#     if stack_list:
+#         full_stack = np.concatenate(stack_list)
+#         filtered_stack = full_stack[filtered_df.index.values]
+#         # for i in np.arange(0, len(full_stack)):
+#         #     if i in filtered_df.index.values:
+#         #         filtered_stack = np.append(filtered_stack, full_stack[i])
 
-        np.save(out_dir + "/filtered.npy", full_stack)
-        np.save(out_dir + "/best_hits.npy", filtered_stack)
+#         np.save(out_dir + "/filtered.npy", full_stack)
+#         np.save(out_dir + "/best_hits.npy", filtered_stack)
 
     g_end = time()
     print("Finished Energy Detection on %s in %.4f seconds" % (os.path.basename(input_file), g_end - g_start))
