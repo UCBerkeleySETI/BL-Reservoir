@@ -17,12 +17,6 @@ slice_length = 256
 p_threshold = 1e-25
 # stat_threshold = 2048
 
-parallel_coarse_chans = 28
-# number of coarse channels operated on in parallel 49 for 343
-
-num_blocks = int(308 / parallel_coarse_chans)  # 308
-
-block_width = coarse_channel_width * parallel_coarse_chans
 
 save_png = False
 save_npy = False
@@ -46,6 +40,16 @@ if __name__ == "__main__":
     with open(out_dir+"/header.pkl", "wb") as f:
         pickle.dump(header, f)
         print("Header saved to "+out_dir+"/header.pkl")
+        
+    # calculate number of coarse channels
+    n_coarse_chans = int(n_chans // coarse_channel_width)
+    for i in range(32, 0, -1):
+        if n_coarse_chans % i == 0:
+            parallel_coarse_chans = i
+            print(f"Processing {parallel_coarse_chans} in parallel")
+            break
+    num_blocks = int(n_coarse_chans // parallel_coarse_chans)
+    block_width = coarse_channel_width * parallel_coarse_chans
 
 # to save clean output, uncomment:
 
