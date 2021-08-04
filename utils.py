@@ -1,3 +1,5 @@
+from google.cloud import storage
+
 standard = (
     "energy_detection",
 )
@@ -31,3 +33,8 @@ def get_algo_command_template(package_name, alg_name):
              f' {alg_name} {input_file} {output_file}')
     else:
         return special[package_name][alg_name]
+
+def file_exists(bucket_name, file_name):
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    return storage.Blob(bucket=bucket, name=file_name).exists(storage_client)
