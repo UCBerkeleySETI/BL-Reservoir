@@ -1,0 +1,13 @@
+wheel
+setuptools
+zmq
+tqdm
+wget
+scipy
+h5py
+git+https://github.com/kiyo-masui/bitshuffle
+matplotlib
+google-cloud-storage
+hdf5plugin
+pandas
+numpy==1.16.4
