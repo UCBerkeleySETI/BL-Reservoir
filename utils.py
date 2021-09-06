@@ -1,4 +1,5 @@
 from google.cloud import storage
+import os
 
 standard = (
     "energy_detection",
@@ -38,3 +39,9 @@ def file_exists(bucket_name, file_name):
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
     return storage.Blob(bucket=bucket, name=file_name).exists(storage_client)
+
+def download_from_bucket(bucket_name, file_name):
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(file_name)
+    blob.download_to_filename(os.path.basename(file_name))

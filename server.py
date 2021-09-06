@@ -6,7 +6,7 @@ import logging
 import sys
 import pickle
 import subprocess
-from .utils import file_exists, get_algo_type, alg_working_directories, get_algo_command_template
+from .utils import file_exists, get_algo_type, alg_working_directories, get_algo_command_template, download_from_bucket
 
 # set up logging
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
@@ -104,12 +104,15 @@ while True:
 
         # download the file and record the start time
         start = time.time()
-        if file_url.startswith("gs://bl-scale"):
+        if file_url.startswith("gs://bl-scale/"):
             # check to make sure if file exists in the bucket gcs fuse
-            filename = file_url.replace("gs://", "/buckets/")
+            filename = file_url.replace("gs://bl-scale/", "")
             if not file_exists("bl-scale", filename):
                 logging.info(f"Invalid path recieved: {filename}")
                 continue
+            else:
+                # if file exists, download it to local machine
+                download_from_bucket("bl-scale", filename)
         elif file_url.startswith("http"):
             filename = wget.download(file_url)
             obs_name = os.path.splitext(filename)[0]
