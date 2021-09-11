@@ -3,6 +3,7 @@ import os
 
 standard = (
     "energy_detection",
+    "dummy"
 )
 
 special = {
