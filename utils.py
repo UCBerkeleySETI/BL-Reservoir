@@ -17,6 +17,7 @@ special = {
 
 alg_working_directories = {
     "energy_detection": "/code/bl_reservoir/energy_detection",
+    "dummy": "/code/bl_reservoir/dummy"
     "turboSETI": "/code/bl_reservoir/turboSETI/turboSETI_env/lib/python3.6/site-packages/turbo_seti"
 }
 
