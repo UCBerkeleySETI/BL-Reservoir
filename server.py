@@ -106,12 +106,14 @@ while True:
         start = time.time()
         if file_url.startswith("gs://bl-scale/"):
             # check to make sure if file exists in the bucket gcs fuse
+            logging.info("URL starts with gs://bl-scale/")
             filename = file_url.replace("gs://bl-scale/", "")
             if not file_exists("bl-scale", filename):
                 logging.info(f"Invalid path recieved: {filename}")
                 continue
             else:
                 # if file exists, download it to local machine
+                logging.info(f"Attempting to download file {filename}")
                 download_from_bucket("bl-scale", filename)
         elif file_url.startswith("http"):
             filename = wget.download(file_url)
