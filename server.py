@@ -167,7 +167,7 @@ while True:
         if fail:
             message["message"] = f"Algorithm Failed, removing {obs_name}"
             broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
-            os.remove(filename)
+            # os.remove(filename) # commented out for now
             logging.info(f"Algorithm Failed, removed {obs_name} from disk")
 
             if scheduler_ip:
