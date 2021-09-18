@@ -1,5 +1,5 @@
 #!/bin/sh
-for dir in */
+for dir in "energy_detection" "dummy"
 do
     dir=${dir%*/}
     if [ -f $dir/requirements.txt ]; then
