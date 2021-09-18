@@ -6,7 +6,7 @@ import logging
 import sys
 import pickle
 import subprocess
-from .utils import get_algo_type, alg_working_directories, get_algo_command_template
+from .utils import file_exists, get_algo_type, alg_working_directories, get_algo_command_template
 
 # set up logging
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
@@ -76,14 +76,17 @@ while True:
 
         # string manipulation to make things easier on the front end
         file_url = request["input_file_url"]
-        # http://blpd13.ssl.berkeley.edu/dl/GBT_58402_67632_HIP65057_fine.h5
-        temp_url = file_url
-        temp_url = temp_url.replace(".", "")
-        temp_url = temp_url.replace(":", "")
-        temp_url = temp_url.replace("/", "")
-        temp_url = temp_url.replace("http", "")
-        temp_url = temp_url.replace("h5", "")
-        message["url"] = temp_url
+
+        # else:
+        # # http://blpd13.ssl.berkeley.edu/dl/GBT_58402_67632_HIP65057_fine.h5
+        #     temp_url = file_url
+        #     temp_url = temp_url.replace(".", "")
+        #     temp_url = temp_url.replace(":", "")
+        #     temp_url = temp_url.replace("/", "")
+        #     temp_url = temp_url.replace("http", "")
+        #     temp_url = temp_url.replace("h5", "")
+
+        # message["url"] = temp_url
         message["filename"] = file_url.split("/")[-1]
         logging.info(f'Received request to process {file_url} with {request["alg_package"]}/{request["alg_name"]}')
         message["message"] = f'Received request to process {file_url} with {request["alg_package"]}/{request["alg_name"]}'
@@ -101,9 +104,18 @@ while True:
 
         # download the file and record the start time
         start = time.time()
-        filename = wget.download(file_url)
-        obs_name = os.path.splitext(filename)[0]
-
+        if file_url.startswith("gs://bl-scale"):
+            # check to make sure if file exists in the bucket gcs fuse
+            filename = file_url.replace("gs://", "/buckets/")
+            if not file_exists("bl-scale", filename):
+                logging.info(f"Invalid path recieved: {filename}")
+                continue
+        elif file_url.startswith("http"):
+            filename = wget.download(file_url)
+            obs_name = os.path.splitext(filename)[0]
+        else:
+            logging.info(f"Invalid path recieved: {filename}")
+            continue
         logging.info(f"Downloaded file {filename}")
         message["message"] = f"Downloaded file {filename}"
         broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
