@@ -1,0 +1,24 @@
+name: Update Tag
+on:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - 'dev'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        with:
+          tag_name: dev
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v5.6
+        with:
+          custom_tag: dev
+          tag_prefix: ""
+          github_token: ${{ secrets.ACCESS_TOKEN }}
