@@ -116,7 +116,8 @@ while True:
                 # if file exists, download it to local machine
                 logging.info(f"Attempting to download file {filename}")
                 obs_name = os.path.splitext(filename)[0]
-                download_from_bucket("bl-scale", filename, f'/code/{filename}')
+                if not download_from_bucket("bl-scale", filename, f'/code/{filename}'):
+                    logging.info(f"Could not find the file named: {filename} in the bl-scale bucket.")
         elif file_url.startswith("http"):
             filename = wget.download(file_url)
             obs_name = os.path.splitext(filename)[0]
