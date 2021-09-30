@@ -52,6 +52,6 @@ RUN chmod 777 /code/bl_reservoir/setup_environments.sh
 RUN sh /code/bl_reservoir/setup_environments.sh
 
 # run server
-WORKDIR /code
+WORKDIR /code/bl_reservoir
 # CMD python3 -m bl_reservoir.$ALG_SUB_PACKAGE.$ALG_NAME
 CMD sh start_server.sh
