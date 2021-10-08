@@ -42,11 +42,12 @@ def file_exists(bucket_name, file_name):
     bucket = storage_client.bucket(bucket_name)
     return storage.Blob(bucket=bucket, name=file_name).exists(storage_client)
 
+# Need to push this once build finishes
 def download_from_bucket(bucket_name, file_name, path_name):
-    if not file_exists(bucket_name,file_name):
+    if not file_exists(bucket_name, file_name):
         return False
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
-    blob = bucket.blob(file_name)
+    blob = storage.Blob(bucket=bucket, name=file_name)
     blob.download_to_filename(path_name)
     return True
