@@ -1,4 +1,3 @@
-git remote add dev git@github.com:UCBerkeleySETI/BL-Reservoir.git
 git fetch --all --tags
 git checkout tags/dev
 cd /code
