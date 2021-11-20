@@ -4,6 +4,10 @@ zmq
 tqdm
 wget
 scipy
+jax
+torch 
+torchvision 
+torchaudio
 h5py
 matplotlib
 google-cloud-storage
