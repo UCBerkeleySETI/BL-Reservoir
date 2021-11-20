@@ -5,6 +5,7 @@ tqdm
 wget
 scipy
 jax
+jraph
 torch 
 torchvision 
 torchaudio
