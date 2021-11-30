@@ -105,6 +105,7 @@ while True:
         # download the file and record the start time
         start = time.time()
         filename, obs_name = "", ""
+        logging.info("Attempting to download the file.")
         if file_url.startswith("gs://bl-scale/"):
             # check to make sure if file exists in the bucket gcs fuse
             logging.info("URL starts with gs://bl-scale/")
@@ -119,6 +120,7 @@ while True:
                 if not download_from_bucket("bl-scale", filename, f'/code/{filename}'):
                     logging.info(f"Could not find the file named: {filename} in the bl-scale bucket.")
         elif file_url.startswith("http"):
+            logging.info("File starts with http")
             filename = wget.download(file_url)
             obs_name = os.path.splitext(filename)[0]
         else:
