@@ -1,3 +1,7 @@
-git fetch --all --tags --prune
+cd /code
+git clone https://github.com/UCBerkeleySETI/BL-Reservoir latest
+cd latest
+git fetch --all --tags
 git checkout tags/dev
-python3 -m bl_reservoir.server
+cd /code
+python3 -m latest.server

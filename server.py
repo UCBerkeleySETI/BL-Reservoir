@@ -6,7 +6,7 @@ import logging
 import sys
 import pickle
 import subprocess
-from .utils import get_algo_type, alg_working_directories, get_algo_command_template
+from .utils import file_exists, get_algo_type, alg_working_directories, get_algo_command_template, download_from_bucket
 
 # set up logging
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
@@ -76,14 +76,17 @@ while True:
 
         # string manipulation to make things easier on the front end
         file_url = request["input_file_url"]
-        # http://blpd13.ssl.berkeley.edu/dl/GBT_58402_67632_HIP65057_fine.h5
-        temp_url = file_url
-        temp_url = temp_url.replace(".", "")
-        temp_url = temp_url.replace(":", "")
-        temp_url = temp_url.replace("/", "")
-        temp_url = temp_url.replace("http", "")
-        temp_url = temp_url.replace("h5", "")
-        message["url"] = temp_url
+
+        # else:
+        # # http://blpd13.ssl.berkeley.edu/dl/GBT_58402_67632_HIP65057_fine.h5
+        #     temp_url = file_url
+        #     temp_url = temp_url.replace(".", "")
+        #     temp_url = temp_url.replace(":", "")
+        #     temp_url = temp_url.replace("/", "")
+        #     temp_url = temp_url.replace("http", "")
+        #     temp_url = temp_url.replace("h5", "")
+
+        # message["url"] = temp_url
         message["filename"] = file_url.split("/")[-1]
         logging.info(f'Received request to process {file_url} with {request["alg_package"]}/{request["alg_name"]}')
         message["message"] = f'Received request to process {file_url} with {request["alg_package"]}/{request["alg_name"]}'
@@ -101,9 +104,28 @@ while True:
 
         # download the file and record the start time
         start = time.time()
-        filename = wget.download(file_url)
-        obs_name = os.path.splitext(filename)[0]
-
+        filename, obs_name = "", ""
+        logging.info("Attempting to download the file.")
+        if file_url.startswith("gs://bl-scale/"):
+            # check to make sure if file exists in the bucket gcs fuse
+            logging.info("URL starts with gs://bl-scale/")
+            filename = file_url.replace("gs://bl-scale/", "")
+            if not file_exists("bl-scale", filename):
+                logging.info(f"Invalid path recieved: {filename}")
+                continue
+            else:
+                # if file exists, download it to local machine
+                logging.info(f"Attempting to download file {filename}")
+                obs_name = os.path.splitext(filename)[0]
+                if not download_from_bucket("bl-scale", filename, f'/code/{filename}'):
+                    logging.info(f"Could not find the file named: {filename} in the bl-scale bucket.")
+        elif file_url.startswith("http"):
+            logging.info("File starts with http")
+            filename = wget.download(file_url)
+            obs_name = os.path.splitext(filename)[0]
+        else:
+            logging.info(f"Invalid path recieved: {filename}")
+            continue
         logging.info(f"Downloaded file {filename}")
         message["message"] = f"Downloaded file {filename}"
         broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
@@ -148,7 +170,7 @@ while True:
         if fail:
             message["message"] = f"Algorithm Failed, removing {obs_name}"
             broadcast_socket.send_multipart([b"MESSAGE", pickle.dumps(message)])
-            os.remove(filename)
+            # os.remove(filename) # commented out for now
             logging.info(f"Algorithm Failed, removed {obs_name} from disk")
 
             if scheduler_ip:
