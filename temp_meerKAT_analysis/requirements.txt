@@ -25,4 +25,7 @@ Keras-Applications
 Keras-Preprocessing
 keras-vis
 jupyter
+jax
+dm-haiku
+astropy
 git+https://github.com/kiyo-masui/bitshuffle
