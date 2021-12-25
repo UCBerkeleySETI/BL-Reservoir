@@ -28,4 +28,3 @@ jupyter
 jax
 dm-haiku
 astropy
-git+https://github.com/kiyo-masui/bitshuffle
