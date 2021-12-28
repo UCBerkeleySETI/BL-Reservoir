@@ -6,5 +6,5 @@ FROM tensorflow/tensorflow:latest-gpu
 RUN apt-get update && apt-get install git -y && apt-get install vim -y && apt-get install wget 
 
 RUN git clone --single-branch --branch peter-dev https://github.com/UCBerkeleySETI/BL-Reservoir.git 
-RUN apt install python3-pip -y  
+RUN apt install python3.10-pip -y  
 RUN cd BL-Reservoir  && cd temp_meerKAT_analysis && pip3 install -r requirements.txt 
